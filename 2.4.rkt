@@ -658,6 +658,10 @@
        (lambda (p1 p2) (tag (mul-poly p1 p2))))
   (put 'make 'polynomial
        (lambda (var terms) (tag (make-poly var terms))))
+  (put '=zero? 'polynomial
+       (lambda (x) (or (empty? x)
+                       (empty-termlist? (term-list x))
+                       (= 0 (variable x)))))
   'done)
 
 (define (add-terms L1 L2)
@@ -699,4 +703,14 @@
 (define (first-term term-list) (car term-list))
 (define (rest-terms term-list) (cdr term-list))
 (define (empty-termlist? term-list) (null? term-list))
+(define (make-term order coeff) (list order coeff))
+(define (order term) (car term))
+(define (coeff term) (cadr term))
+
+(define (make-polynomial var terms)
+  ((get 'make 'polynomial) var terms))
+
+;; 2.87 define empty? 
+;; see above
+
 
