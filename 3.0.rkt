@@ -98,3 +98,23 @@
 (A 10)
 ;; => 25 
 
+(define (make-monitored f)
+  (let ((count 0))
+    (define (dispatch m)
+      (cond ((eq? m 'reset) (set! count 0))
+            ((eq? m 'how-many-calls?) count)
+            (else (begin
+                    (set! count (+ 1 count))
+                    (f m)))))
+    dispatch))
+
+(define s (make-monitored sqrt))
+(s 100)
+;; => 10
+(s 25)
+;; => 5 
+(s 'how-many-calls?)
+;; => 2
+(s 'reset)
+(s 'how-many-calls?)
+;; => 0
