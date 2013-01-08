@@ -118,3 +118,30 @@
 (s 'reset)
 (s 'how-many-calls?)
 ;; => 0
+
+;; 3.3 - Modified make-account
+(define (make-account balance password)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch pass-guess m)
+    (cond ((not (eq? password pass-guess))
+           (lambda (x) "Incorrect password"))
+          ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else (error "Unknown request -- MAKE-ACCOUNT"
+                       m))))
+  dispatch)
+
+(define acc (make-account 100 'pass))
+((acc 'pass 'withdraw) 50)
+;; => 50
+((acc 'wrong 'withdraw) 60)
+;; => "Incorrect password"
+
+;; 3.4 - add "call the cops" to new make-account
