@@ -57,8 +57,22 @@
 (define (sqrt x)
   (sqrt-iter 1.0 x))
 (sqrt 9)
+(sqrt (+ 100 37))
+(sqrt (+ (sqrt 2) (sqrt 3)))
+(square (sqrt 1000))
 
+;; 1.7
+(define (sqrt-iter-precise guess x old-guess)
+  (if (< (abs (- guess old-guess)) .00001)
+      guess
+      (sqrt-iter-precise
+       (improve guess x)
+       x
+       guess)))
 
+(define (sqrt-precise x)
+  (sqrt-iter-precise 1.0 x x))
+(square (sqrt-precise 40))
 
 
 
