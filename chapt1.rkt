@@ -185,3 +185,13 @@
 (f 10) ;;1892 
 (f 12) ;;1892 
 
+;; 1.12
+(define (pascal-triangle n)
+  (if (= n 1)
+      '(0 1 0)
+      (list 0 1 1 0)))
+
+(pascal-triangle 2)
+
+
+
