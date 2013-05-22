@@ -175,8 +175,13 @@
          (* 3 (f (- n 3))))))
 
 (define (f n)
-  (fi 1 0 n))
-(define (f n total count)
-  )
-
+  (fi 2 1 0 n))
+(define (fi n-1 n-2 n-3 count)
+  (if (= count 0)
+      n-3
+      (fi (+ n-1 (* 2 n-2) (* 3 n-3))
+          n-1 n-2 (- count 1))))
+(f 5) ;; 25
+(f 10) ;;1892 
+(f 12) ;;1892 
 
