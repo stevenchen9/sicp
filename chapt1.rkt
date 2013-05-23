@@ -191,7 +191,13 @@
       '(0 1 0)
       (list 0 1 1 0)))
 
-(pascal-triangle 2)
+(if (and (equal? (pascal-triangle 2) '(0 1 1 0))
+         (equal? (pascal-triangle 3) '(0 1 2 1 0))
+         (equal? (pascal-triangle 1) '(0 1 0)))
+    'passed
+    'failed)
+
+
 
 
 
