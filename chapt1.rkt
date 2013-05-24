@@ -1,3 +1,16 @@
+(define (assert-equal x y)
+  (if (equal? x y)
+      #t
+      (string-append "failed: expected " (number->string y) " was "  (number->string x))))
+
+(define (tests a . b)
+  (display (foldl (lambda (x acum)
+                    (if (equal? true x)
+                        (string-append acum "p\n")
+                        (string-append acum  x " \n")))
+                  ""
+                  (cons a b))))
+
 (define size 2)
 
 (define pi 3.14159)
