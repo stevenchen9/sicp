@@ -199,16 +199,21 @@
 (f 12) ;;1892 
 
 ;; 1.12
-(define (pascal-triangle n)
-  (if (= n 1)
-      '(0 1 0)
-      (list 0 1 1 0)))
+;;    1
+;;   1 1
+;;  1 2 1
+;; 1 3 3 1
+;;1 4 6 4 1
+(define (pascal-triangle r c)
+  (if (= r 1)
+      (if (or (> 1 c) (< r c)) 0 1) ;; add "0" around the outsides
+      (+  (pascal-triangle (- r 1) (- c 1))
+          (pascal-triangle (- r 1) c))))
 
-(if (and (equal? (pascal-triangle 2) '(0 1 1 0))
-         (equal? (pascal-triangle 3) '(0 1 2 1 0))
-         (equal? (pascal-triangle 1) '(0 1 0)))
-    'passed
-    'failed)
+(tests (assert-equal (pascal-triangle 2 1) 1)
+       (assert-equal (pascal-triangle 3 2) 2)
+       (assert-equal (pascal-triangle 5 3) 6)
+       (assert-equal (pascal-triangle 1 1) 1))
 
 
 
