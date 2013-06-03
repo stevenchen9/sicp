@@ -228,6 +228,43 @@
 (sine 30) ; p -> 6 times
 (sine 100) ; p -> 7 times
 
+;; recursive exponent
+(define (expt-rec b n)
+  (if (= n 0)
+      1
+      (* b (expt b (- n 1)))))
+(expt-rec 5 5)
+(define (expt-iter b counter product)
+  (if (= counter 0)
+      product
+      (expt-iter b
+                 (- counter 1)
+                 (* b product))))
 
+(define (expt b n)
+  (expt-iter b n 1))
+(expt 5 5)
+(define (even? n)
+  (= (remainder n 2) 0))
 
+(define (fast-expt b n)
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expt b (/ n 2))))
+        (else (* b (fast-expt b (- n 1))))))
+(fast-expt 40 50)
 
+;; 1.17
+(define (double x)
+  (* 2 x))
+(define (halve x)
+  (/ x 2))
+(halve 4)
+
+(define (fast-mult x y)
+  (if (= y 0)
+      0
+      (if (even? y)
+          (+ x (double (fast-mult x (halve y))))
+          (+ x x (double (fast-mult x (halve (- y 1))))))))
+
+(fast-mult 5 5)
