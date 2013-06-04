@@ -264,7 +264,10 @@
   (if (= y 0)
       0
       (if (even? y)
-          (+ x (double (fast-mult x (halve y))))
-          (+ x x (double (fast-mult x (halve (- y 1))))))))
+          (double (fast-mult x (halve y)))
+          (+ x (double (fast-mult x (halve (- y 1))))))))
 
-(fast-mult 5 5)
+(tests (assert-equal (fast-mult 5 5) 25)
+       (assert-equal (fast-mult 5 4) 20))
+
+
