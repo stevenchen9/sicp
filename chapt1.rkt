@@ -234,6 +234,8 @@
       1
       (* b (expt b (- n 1)))))
 (expt-rec 5 5)
+
+;; iterative exponent
 (define (expt-iter b counter product)
   (if (= counter 0)
       product
@@ -244,6 +246,7 @@
 (define (expt b n)
   (expt-iter b n 1))
 (expt 5 5)
+
 (define (even? n)
   (= (remainder n 2) 0))
 
@@ -269,5 +272,22 @@
 
 (tests (assert-equal (fast-mult 5 5) 25)
        (assert-equal (fast-mult 5 4) 20))
+
+;; 1.18
+(define (mult-i x y)
+  (mult-iter x y 1))
+(define (mult-iter x y product)
+  (if (= y 0)
+      product
+      (if (even? y)
+          (mult-iter (double x)
+                     (halve y)
+                     product)
+          (mult-iter x
+                     (- y 1)
+                     (+ x product)))))
+
+(tests (assert-equal (mult-i 5 5) 25)
+       (assert-equal (mult-i 5 4) 20))
 
 
