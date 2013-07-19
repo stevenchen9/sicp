@@ -351,3 +351,36 @@
 
 (fast-prime? 5 100)
 
+;1.21
+(smallest-divisor 199) ;199
+(smallest-divisor 1999) ;1999
+(smallest-divisor 19999) ;7
+
+;1.22
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime (- (runtime) start-time))
+      ""))
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+;1.23
+(define (next-divisor n)
+  (if (= n 2)
+      3
+      (+ n 2)))
+(define (smallest-divisor n)
+  (find-divisor n 2))
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (next-divisor test-divisor)))))
+(define (divides? a b)
+  (= (remainder b a) 0))
+(smallest-divisor 19999)       
+
