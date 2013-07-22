@@ -121,7 +121,7 @@
   (if (= n 1)
       1
       (* n (factorial (- n 1)))))
-(factorial 50)
+(factorial 4) ;24
 
 (define (factorial n)
   (fact-iter 1 1 n))
@@ -429,15 +429,45 @@
 ;1.29
 (define (simpsons-rule f a b n)
   (define (inc n) (+ n 1))
-  (define (h) (/ (- b a) n))
-  (define (y k) (f (+ a (* k (h)))))
+  (define h (/ (- b a) n))
+  (define (y k)
+    (f (+ a (* k h))))
   (define (term k)
     (* (cond ((odd? k) 4)
              ((or (= k 0) (= k n)) 1)
              ((even? k) 2))
        (y k)))
-  (/ (* (h) (sum term 0 inc n)) 3))
+  (/ (* h (sum term 0 inc n)) 3))
+
 (simpsons-rule cube 0 1 0.01)
 
+;1.30
+(define (sum term a next b)
+  (define (iter a result)
+    (if (> a b) 
+        result
+        (iter (next a) (+ result (term a)))))
+  (iter a 0))
 
+(define (sum-cubes a b)
+  (sum cube a inc b))
+(sum-cubes 1 10) ; 3025
 
+;1.31
+(define (product term a next b)
+  (if (> a b)
+      1
+      (* (term a)
+         (product term (next a) next b))))
+
+(define (no-change x) x)
+(define (factorial n)
+  (product no-change 1 inc n))
+(factorial 4) ;24
+
+(define (product term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (* result (term a)))))
+  (iter a 1))
