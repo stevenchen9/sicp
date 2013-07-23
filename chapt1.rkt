@@ -492,5 +492,20 @@
         (iter (next a) (combiner result (term a)))))
   (iter a null-value))
 
+;1.33
+(define (filtered-accumulate combiner pred null-value term a next b)
+  (if (> a b)
+      null-value
+      (if (pred a)
+          (combiner (term a)
+                    (filtered-accumulate combiner pred null-value term (next a) next b))
+          (filtered-accumulate combiner pred null-value term (next a) next b))))
+
+(define (sum-prime a b)
+  (filtered-accumulate + prime? 0 square a inc b))
+(sum-prime 1 10) ; a. 88
+(define (prod-prime a b)
+  (filtered-accumulate * prime? 1 identity a inc b))
+(prod-prime 1 10)
 
 
