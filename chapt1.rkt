@@ -523,3 +523,25 @@
      dx))
 
 ((lambda (x y z) (+ x y (square z))) 1 2 3)
+
+(define (f x y)
+  ((lambda (a b)
+     (+ (* x (square a))
+       (* y b)
+       (* a b)))
+   (+ 1 (* x y))
+   (- 1 y)))
+(define (f x y)
+  (let ((a (+ 1 (* x y)))
+        (b (- 1 y)))
+    (+ (* x (square a))
+       (* y b)
+       (* a b))))
+
+;1.34
+(define (f g)
+  (g 2))
+
+(f square)
+(f (lambda (z) (* z (+ z 1))))
+
