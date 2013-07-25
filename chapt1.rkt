@@ -592,4 +592,23 @@
 (fixed-point (lambda (y) (+ (sin y) (cos y)))
              1.0)
 
+(define (sqrt x)
+  (fixed-point (lambda (y) (average y (/ x y)))
+               1.0))
+
+(sqrt 9)
+
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+((average-damp square) 10)
+
+(define (sqrt x)
+  (fixed-point (average-damp (lambda (y) (/ x y)))
+               1.0))
+
+(define (cube-root x)
+  (fixed-point (average-damp (lambda (y) (/ x (square y))))
+               1.0))
+(cube-root 27)
 
