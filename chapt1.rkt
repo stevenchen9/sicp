@@ -641,10 +641,32 @@
   (fixed-point-of-transform (lambda (y) (/ x y))
                             average-damp
                             1.0))
-
+;1.40
 (define (cubic a b c)
   (lambda (x) (+ (cube x)
             (* a x x)
             (* b x)
             c)))
-(newtons-method (cubic ))
+(newtons-method (cubic 3 -2.4 6) 1)
+
+;1.41
+(define (double func)
+  (lambda (x) (func (func x))))
+
+(((double (double double)) inc) 5) ;21
+
+;1.42
+(define (compose f g)
+  (lambda (x) (f (g x))))
+
+((compose square inc) 6) ;49
+
+;1.43
+(define (repeated func count)
+  (if (= count 1)
+      func
+      (compose func (repeated func (- count 1)))))
+((repeated square 2) 5) ;625
+
+
+
