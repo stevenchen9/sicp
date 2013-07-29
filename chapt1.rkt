@@ -65,6 +65,8 @@
   (average guess (/ x guess)))
 (define (average x y)
   (/ (+ x y) 2))
+(define (average3 x y z)
+  (/ (+ x y z) 3))
 (define (good-enough? guess x)
   (< (abs (- (square guess) x)) 0.001))
 (define (sqrt x)
@@ -667,6 +669,24 @@
       func
       (compose func (repeated func (- count 1)))))
 ((repeated square 2) 5) ;625
+
+;1.44
+(define (f x) (cos x))
+(define (smooth f dx)
+  (lambda (x)
+    (average3 (f (- x dx))
+              (f x)
+              (f (+ x dx)))))
+((smooth f 1.0) 5)
+(define (smooth-n f dx n)
+  (repeated (smooth f dx) n))
+((smooth-n f 1.0 100) 5)
+
+
+
+
+
+
 
 
 
