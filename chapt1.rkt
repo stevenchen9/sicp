@@ -746,4 +746,47 @@
 (make-rat 1 -2) ;-1/2
 (make-rat 1 2) ;1/2
 
+; perform the gcd check on each lookup..
+(define (make-rat n d)
+  (cons n d))
+(define (numer x)
+  (let ((g (gcd (car x) (cdr x))))
+    (/ (car x) g)))
+(define (denom x)
+  (let ((g (gcd (car x) (cdr x))))
+    (/ (cdr x) g)))
+
+;2.2
+(define (make-point x y)
+  (cons x y))
+(define (x-point x)
+  (car x))
+(define (y-point x)
+  (cdr x))
+(define (print-point p)
+  (newline)
+  (display "(")
+  (display (x-point p))
+  (display ",")
+  (display (y-point p))
+  (display ")"))
+(print-point (make-point 1 3))
+(define (make-segment p1 p2)
+  (cons p1 p2))
+(define (start-segment seg)
+  (car seg))
+(define (end-segment seg)
+  (cdr seg))
+(define (midpoint-segment seg)
+  (make-point
+   (average (x-point (start-segment seg))
+            (x-point (end-segment seg)))
+   (average (y-point (start-segment seg))
+            (y-point (end-segment seg)))))
+(define p1 (make-point 3 3))
+(define p2 (make-point 6 6))
+(define seg1 (make-segment p1 p2))
+(print-point (midpoint-segment seg1))
+
+
 
