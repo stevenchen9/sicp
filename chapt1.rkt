@@ -23,16 +23,17 @@
   (+ (square x) (square y)))
 
 (sum-of-squares 3 4)
+
 (define (abs x)
   (cond ((> x 0) x)
         ((= x 0) 0)
-        ((< x 0) (-x))))
+        ((< x 0) (* -1 x))))
 (define (abs2 x)
-  (cond ((< x 0) (-x))
+  (cond ((< x 0) (* -1 -x))
         (else x)))
 (define (abs3 x)
   (if (< x 0)
-      (-x)
+      (* -1 x)
       x))
 (define (>= x y)
   (not (< x y)))
@@ -788,5 +789,32 @@
 (define seg1 (make-segment p1 p2))
 (print-point (midpoint-segment seg1))
 
+;;2.3
+(define (make-rect p1 p2 p3 p4)
+  (list p1 p2 p3 p4))
+(define (seg-length p1 p2)
+  ;; a = x2-x1,b = y2-y1 
+  ;; a^2 + b^2 = c^2
+  (sqrt (+ (abs (- (x-point p1) (x-point p2)))
+           (abs (- (y-point p1) (y-point p2))))))
 
+(seg-length (make-point 1 1) (make-point 0 0))
+(seg-length (make-point 1 0) (make-point 0 0)) ;1
+
+(define (p1 rect) (car rect))
+(define (p2 rect) (cadr rect))
+(define (p3 rect) (caddr rect))
+(define (p4 rect) (cadddr rect))
+(define (rect-perimeter rect)
+  (+ (seg-length (p1 rect) (p2 rect))
+     (seg-length (p2 rect) (p3 rect))
+     (seg-length (p3 rect) (p4 rect))
+     (seg-length (p4 rect) (p1 rect))))
+
+(define rect1 (make-rect
+               (make-point 0 0)
+               (make-point 1 0)
+               (make-point 1 1)
+               (make-point 0 1)))
+(rect-perimeter rect1) ;;4.0
 
