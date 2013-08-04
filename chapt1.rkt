@@ -837,4 +837,24 @@
 (define (cdr z)
   (z (lambda (p q) q)))
 (car (cons 1 2))
+(cdr (cons 1 2))
+
+;;2.5
+(define (cons x y)
+  (* (expt 2 x)
+     (expt 3 y)))
+
+(define (times-divisible num div)
+  (define (inner x count)
+    (if (= (remainder x div) 0)
+        (inner (/ x div) (+ count 1))
+        count))
+  (inner num 0))
+
+(define (car x) (times-divisible x 2))
+(define (cdr x) (times-divisible x 3))
+
+(define pair (cons 3 4))
+(car pair) ;;3
+(cdr pair) ;;4
 
