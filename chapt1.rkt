@@ -858,3 +858,34 @@
 (car pair) ;;3
 (cdr pair) ;;4
 
+;;2.6
+(define zero (lambda (f) (lambda (x) x)))
+(define (add-1 n)
+  (lambda (f) (lambda (x) (f ((n f) x)))))
+
+(define (inc c)
+  (+ c 1))
+
+((zero inc) 0)
+((zero inc) 1)
+
+(define one (add-1 zero))
+(define two (add-1 one))
+
+(define one
+  (lambda (f) (lambda (x) (f x))))
+(define two
+  (lambda (f) (lambda (x) (f (f x)))))
+
+((one inc) 0) ;; 1
+((one inc) 5) ;; 6
+((two inc) 3) ;; 5
+
+(define (add-1 n)
+  (lambda (f) (lambda (x) (f ((n f) x)))))
+
+(define (add-church m n)
+  (lambda (f) (lambda (x) ((m f) ((n f) x)))))
+
+(define three (add-church one two))
+((three inc) 0) ;; 3
