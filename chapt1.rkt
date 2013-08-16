@@ -920,3 +920,39 @@
                  (- (upper-bound x) (upper-bound y))))
 
 
+;; Simple cons cell list of numbers
+(cons 1 (cons 2 (cons 3 (cons 4 null))))
+;; is the same as
+(list 1 2 3 4)
+
+(define one-through-four (list 1 2 3 4))
+(car one-through-four)
+(cdr one-through-four)
+(car (cdr one-through-four))
+(cons 10 one-through-four)
+(define (list-ref items n)
+  (if (= n 0)
+      (car items)
+      (list-ref (cdr items) (- n 1))))
+(define squares (list 1 4 9 16 25))
+(list-ref squares 3) ;;16
+
+(define (length items)
+  (if (null? items)
+      0
+      (+ 1 (length (cdr items)))))
+(define odds (list 1 3 5 7))
+(length odds) ;;4
+
+(define (length items)
+  (define (length-iter a count)
+    (if (null? a)
+        count
+        (length-iter (cdr a) (+ 1 count))))
+  (length-iter items 0))
+
+(append squares odds)
+
+
+
+
