@@ -953,6 +953,23 @@
 
 (append squares odds)
 
+(append odds squares)
+
+(define (append list1 list2)
+  (if (null? list1)
+      list2
+      (cons (car list1) (append (cdr list1) list2))))
+
+;;2.17
+(define (last-pair l)
+  (define (last-iter il prev)
+    (if (null? il)
+        (list prev)
+        (last-iter (cdr il) (car il))))
+  (last-iter l null))
+
+(last-pair (list 23 72 149 34))
+
 
 
 
