@@ -1187,9 +1187,19 @@
 ;; => ((6 5) (4 3) (2 1))
 
 
+;; 2.28
+(define x (list (list 1 2) (list 3 4)))
 
-
-
+;; ((1 2) (3 4))
+;;    /     \
+;; (1 2)   (3 4)
+;;  /  \    /  \
+;; 1   2   3   4
+(define (fringe items)
+  (if (empty? items))
+  (foldl append '() ))
+  
+(fringe x)
 
 
 
