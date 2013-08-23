@@ -969,6 +969,19 @@
   (last-iter l null))
 
 (last-pair (list 23 72 149 34))
+;; => (34)
+
+;;2.18
+;; Reverses a list
+(define (reverse li)
+  (if (= 1 (length li))
+      li
+      (append (reverse (cdr li)) (list (car li)))))
+
+(reverse (list 1 4 9 16 25))
+;; =>(25 16 9 4 1)
+
+
 
 
 
