@@ -988,7 +988,7 @@
   (cc amount us-coins))
 
 (define us-coins (list 50 25 10 5 1))
-(define us-coins (list 100 50 20 10 5 2 1 0.5))
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
 (define (cc amount coin-values)
   (cond ((= amount 0) 1)
         ((or (< amount 0) (no-more? coin-values)) 0)
@@ -999,10 +999,13 @@
                 coin-values)))))
 
 (define (except-first-denomination li)
-  (cdr li))
+   (cdr li))
 (define (no-more? li)
   (= 0 (length li)))
 (define (first-denomination li)
   (car li))
-(count-change 100)
+(cc 100 us-coins)
+(cc 100 uk-coins)
+
+
 
