@@ -1007,5 +1007,42 @@
 (cc 100 us-coins)
 (cc 100 uk-coins)
 
+;; 2.20
+;; A . in a parameter list will put all parameters after into a list
+(define (same-parity first . rest)
+  (cons first
+        (if (odd? first)
+            (filter odd? rest)
+            (filter even? rest))))
+(same-parity 1 2 3 4 5 6 7 8)
+;; => (1 3 5 7)
+(same-parity 2 3 4 5 6 7 8)
+;; => (2 4 6 8)
+
+
+;; Mapping
+
+;; A scaling example that doesn't use map
+(define (scale-list items factor)
+  (if (null? items)
+      null
+      (cons (* (car items) factor)
+            (scale-list (cdr items) factor))))
+(scale-list (list 1 2 3 4 5) 10)
+
+;; An example of map
+(define (map proc items)
+  (if (null? items)
+      null
+      (cons (proc (car items))
+            (map proc (cdr items)))))
+(map abs (list -10 2.5 -11.6 17))
+;; => (10 2.5 11.6 17)
+
+(map (lambda (x) (* x x))
+     (list 1 2 3 4))
+;; => (1 4 9 16)
+
+
 
 
