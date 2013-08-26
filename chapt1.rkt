@@ -1043,6 +1043,65 @@
      (list 1 2 3 4))
 ;; => (1 4 9 16)
 
+;; using the new map abstraction
+(define (scale-list items factor)
+  (map (lambda (x) (* x factor))
+       items))
+
+(scale-list (list 1 2 3) 2)
+;; => (2 4 6)
+
+;; 2.21
+(define (square-list items)
+  (if (null? items)
+      null
+      (cons (* (car items) (car items))
+            (square-list (cdr items)))))
+
+(square-list (list 1 2 3 4))
+;; => (1 4 9 16)
+
+(define (square-list items)
+  (map (lambda (x) (* x x))
+       items))
+(square-list (list 1 2 3 4))
+;; => (1 4 9 16)
+
+;; 2.22
+(define (square x)
+  (* x x))
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+        answer
+        (iter (cdr things)
+              (cons (square (car things))
+                    answer))))
+  (iter items null))
+
+(square-list (list 1 2 3 4))
+;; => (16 9 4 1)
+
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+        answer
+        (iter (cdr things)
+              (cons answer
+                    (square (car things))))))
+  (iter items null))
+
+(square-list (list 1 2 3 4))
+;; => ((((() . 1) . 4) . 9) . 16)
+;; ... why?
+
+
+
+
+
+
+
+
 
 
 
