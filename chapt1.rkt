@@ -1114,6 +1114,12 @@
 (square-list (list 1 2 3 4))
 ;; => (1 4 9 16)
 
+;; 2.23
+(define (for-each items fun)
+  (map items fun)
+  null)
+(for-each (lambda (x) (newline) (display x))
+          (list 57 321 88))
 
 
 
