@@ -1082,6 +1082,7 @@
 (square-list (list 1 2 3 4))
 ;; => (16 9 4 1)
 
+;; reversing the cons order
 (define (square-list items)
   (define (iter things answer)
     (if (null? things)
@@ -1093,8 +1094,25 @@
 
 (square-list (list 1 2 3 4))
 ;; => ((((() . 1) . 4) . 9) . 16)
-;; ... why?
 
+;; The second list is incorrect because it is building the
+;; cons cells backwards. All that is needed to fix the first
+;; list is to reverse the items before starting the iteration,
+;; what is odd is that it builds the list from the inside out,
+;; starting with the last cons cell, and consing on each
+;; subsequent argument. 
+
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+        answer
+        (iter (cdr things)
+              (cons (square (car things))
+                    answer))))
+  (iter (reverse items) null))
+
+(square-list (list 1 2 3 4))
+;; => (1 4 9 16)
 
 
 
