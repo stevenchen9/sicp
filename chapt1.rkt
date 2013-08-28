@@ -1120,6 +1120,36 @@
   null)
 (for-each (lambda (x) (newline) (display x))
           (list 57 321 88))
+(cons (list 1 2) (list 3 4)) 
+
+;; Tree data structures
+(define x (cons (list 1 2) (list 3 4)))
+;; Incorrect counts of leaves
+(length x) ;; => 3
+(length (list x x)) ;;=> 2
+
+(define (count-leaves x)
+  (cond ((null? x) 0)
+        ((not (pair? x)) 1)
+        (else (+ (count-leaves (car x))
+                 (count-leaves (cdr x))))))
+
+;; Correct counts of leaves
+(count-leaves x) ;; => 4
+(count-leaves (list x x)) ;; => 8
+
+;; 2.24
+(list 1 (list 2 (list 3 4)))
+;; => (1 (2 (3 4)))
+
+;; Tree diagram
+;;  (1 (2 (3 4)))
+;;   /     \
+;; 1    (2 (3 4))
+;;      /     \
+;;     2     (3 4)
+;;          /    \
+;;         3      4 
 
 
 
