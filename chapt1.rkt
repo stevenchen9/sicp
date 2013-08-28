@@ -1151,8 +1151,14 @@
 ;;          /    \
 ;;         3      4 
 
+;; 2.25
+(define x (list 1 3 (list 5 7) 9))
+(car (cdr (car (cdr (cdr x)))))
+;; => 7
+(car (cdaddr x))
+;; => 7
 
-
+;; 2.26
 
 
 
