@@ -1159,6 +1159,34 @@
 ;; => 7
 
 ;; 2.26
+(define x (list 1 2 3))
+(define y (list 4 5 6))
+(append x y)
+;; => (1 2 3 4 5 6)
+(cons x y)
+;; => ((1 2 3) 4 5 6)
+(list x y)
+;; => ((1 2 3) (4 5 6))
+
+;; 2.27 Deep Reverse
+(define x (list (list 1 2) (list 3 4) (list 5 6)))
+(reverse x)
+;; => ((3 4) (1 2))
+(define (deep-reverse li)
+  (define (reverse-if-list items)
+    (if (pair? items)
+        (deep-reverse items)
+        items))
+  (if (= 1 (length li))
+      (list (if (pair? (car li))
+                (deep-reverse (car li))
+                (car li)))
+      (append (deep-reverse (cdr li))
+              (list (reverse-if-list (car li))))))
+(deep-reverse x)
+;; => ((6 5) (4 3) (2 1))
+
+
 
 
 
