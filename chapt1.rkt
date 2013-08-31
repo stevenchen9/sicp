@@ -1196,10 +1196,12 @@
 ;;  /  \    /  \
 ;; 1   2   3   4
 (define (fringe items)
-  (if (empty? items))
-  (foldl append '() ))
-  
-(fringe x)
+  (cond ((null? items) null)
+        ((not (pair? items)) (list items))
+        (else (append (fringe (car items))
+                      (fringe (cdr items))))))
+
+(fringe (list x x))
 
 
 
