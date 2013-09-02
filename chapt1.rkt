@@ -1202,6 +1202,41 @@
                       (fringe (cdr items))))))
 
 (fringe (list x x))
+;; => (1 2 3 4 1 2 3 4)
 
+;; 2.29
+(define (make-mobile left right)
+  (cons left right))
+(define (make-branch length structure)
+  (cons length structure))
+(define (left-branch tree)
+  (car tree))
+(define (right-branch tree)
+  (cadr tree))
+(define (branch-length tree)
+  (car tree))
+(define (branch-structure tree)
+  (cadr tree))
+(define (weigh branch)
+  (if (pair? (branch-structure branch))
+      (total-weight (branch-structure branch))
+      (branch-structure branch)))
+(define (total-weight mobile)
+  (+ (weigh (left-branch mobile))
+     (weigh (right-branch mobile))))
+(define (is-balanced? mobile)
+  (= (weigh (left-branch mobile))
+     (weigh (right-branch mobile))))
 
+(define mob (make-mobile (make-branch 0 1) (make-branch 0 1)))
+(define mob1
+  (make-mobile
+   (make-branch 1 mob)
+   (make-branch 1 mob)))
+(total-weight mob1)
+;; => 4 
+(is-balanced? mob1)
+;; => #t
 
+;; The two "selector" functions just have to change to support
+;; the change to the structure to use cons instead of list
