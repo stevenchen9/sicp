@@ -1240,3 +1240,50 @@
 
 ;; The two "selector" functions just have to change to support
 ;; the change to the structure to use cons instead of list
+
+
+;; Mapping over trees
+;; Iteratively
+(define (scale-tree tree factor)
+  (cond ((null? tree) null)
+        ((not (pair? tree)) (* tree factor))
+        (else (cons (scale-tree (car tree) factor)
+                    (scale-tree (cdr tree) factor)))))
+(scale-tree (list 1 (list 2 (list 3 4) 5) (list 6 7))
+            10)
+
+;; Using map
+(define (scale-tree tree factor)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (scale-tree sub-tree factor)
+             (* sub-tree factor)))
+       tree))
+
+;; 2.30
+;; iteratively
+(define (walk-tree tree func)
+  (cond ((null? tree) null)
+        ((not (pair? tree)) (func tree))
+        (else (cons (walk-tree (car tree) func)
+                    (walk-tree (cdr tree) func)))))
+(define (square-tree tree)
+  (walk-tree tree (lambda (x) (square x))))
+
+(define t (list 1 (list 2 (list 3 4) 5) (list 6 7)))
+(square-tree t) 
+;; => (1 (4 (9 16) 25) (36 49))
+
+;; Recursively, with map
+(define (walk-tree tree factor)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (walk-tree sub-tree factor)
+             (factor sub-tree)))
+       tree))
+
+(define (square-tree tree)
+  (walk-tree tree (lambda (x) (square x))))
+
+(square-tree t) 
+;; => (1 (4 (9 16) 25) (36 49))
