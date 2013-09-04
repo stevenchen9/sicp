@@ -1287,3 +1287,18 @@
 
 (square-tree t) 
 ;; => (1 (4 (9 16) 25) (36 49))
+
+;; 2.31
+;; See above
+
+;; 2.32
+(define (subsets s)
+  (if (null? s)
+      (list null)
+      (let ((rest (subsets (cdr s))))
+        (append rest
+                (map (lambda (x) (cons (car s) x))
+                     rest)))))
+(subsets (list 1 2 3))
+
+
