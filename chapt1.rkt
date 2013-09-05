@@ -1301,4 +1301,31 @@
                      rest)))))
 (subsets (list 1 2 3))
 
+;; 2.2.3 Seqs as interfaces
+
+;; Both of these functions do: Enumerate, Filter, Map, Accumulate
+;; 1. Enumerate -> tree-leaves
+;; 2. Filter -> odd?
+;; 3. Map -> square
+;; 4. Accumulate -> +
+(define (sum-odd-squares tree)
+  (cond ((null? tree) 0)
+        ((not (pair? tree))
+         (if (odd? tree) (square tree) 0))
+        (else (+ (sum-odd-squares (car tree))
+                 (sum-odd-squares (cdr tree))))))
+
+;; 1. Enumerate -> integers
+;; 2. Map -> fib
+;; 3. Filter -> even?
+;; 4. Accumulate -> cons
+(define (even-fibs n)
+  (define (next k)
+    (if (> k n)
+        null
+        (let ((f (fib k)))
+          (if (even? f)
+              (cons f (next (+ k 1)))
+              (next (+ k 1))))))
+  (next 0))
 
