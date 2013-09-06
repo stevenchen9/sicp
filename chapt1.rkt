@@ -1328,4 +1328,34 @@
               (cons f (next (+ k 1)))
               (next (+ k 1))))))
   (next 0))
+(even-fibs 10)
+
+
+;; Trying to decompose these two
+;; similar flows into sequence abstractions
+
+;; A map
+(map square (list 1 2 3 4 5))
+;; => (1 4 9 16 25)
+
+;; A filter operation
+(define (filter predicate sequence)
+  (cond ((null? sequence) null)
+        ((predicate (car sequence))
+         (cons (car sequence)
+               (filter predicate (cdr sequence))))
+        (else (filter predicate (cdr sequence)))))
+(filter odd? (list 1 2 3 4 5))
+;; => (1 3 5)
+
+;; An acumulation operation
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
+(accumulate + 0 (list 1 2 3 4 5))
+;; => 15
+(accumulate cons null (list 1 2 3 4 5))
+;; => (1 2 3 4 5)
 
