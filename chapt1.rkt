@@ -1391,6 +1391,41 @@
                       (map fib
                            (enumerate-interval 0 n)))))
 
+;; splitting out some of the even-fibs function
+(define (list-fib-squares n)
+  (accumulate cons
+              null
+              (map square
+                   (map fib
+                        (enumerate-interval 0 n)))))
+(list-fib-squares 10)
+;; => (0 1 1 4 9 25 64 169 441 1156 3025)
+
+(define (product-of-squares-of-odd-elements sequence)
+  (accumulate *
+              1
+              (map square
+                   (filter odd? sequence))))
+(product-of-squares-of-odd-elements (list 1 2 3 4 5))
+;; => 225
+
+
+;; 2.33
+(define (map p sequence)
+  (accumulate (lambda (x y) (cons (p x) y))
+              null
+              sequence))
+(map (lambda (x) (+ 1 x)) (list 1 2 3))
+
+(define (append seq1 seq2)
+  (accumulate cons seq2 seq1))
+(append (list 1 2) (list 3 4))
+
+(define (length sequence)
+  (accumulate (lambda (x y) (+ 1 y)) 0 sequence))
+(length (list 1 2 3 4 5))
+
+
 
 
 
