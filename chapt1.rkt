@@ -1425,8 +1425,23 @@
   (accumulate (lambda (x y) (+ 1 y)) 0 sequence))
 (length (list 1 2 3 4 5))
 
+;; 2.34
+(define (horner-eval x coefficient-sequence)
+  (accumulate (lambda (this-coeff higher-terms)
+                (+ (* x higher-terms) this-coeff))
+              0
+              coefficient-sequence))
 
+(horner-eval 2 (list 1 3 0 5 0 1))
+;; => 79
 
+;; 2.25
+;; Used the enumerate to "walk" the tree contents,
+;; returning 1 for each element
+(define (count-leaves t)
+  (accumulate + 0 (map (lambda (x) 1) (enumerate-tree t))))
 
+(define x (cons (list 1 2) (list 3 4)))
+(count-leaves (list x x))
 
 
