@@ -1444,4 +1444,36 @@
 (define x (cons (list 1 2) (list 3 4)))
 (count-leaves (list x x))
 
+;; 2.26
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      null
+      (cons (accumulate op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
+(define x (list
+           (list 1 2 3)
+           (list 4 5 6)
+           (list 7 8 9)
+           (list 10 11 12)))
+(accumulate-n + 0 x)
+;; => (22 26 30)
+
+;; 2.27
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+
+(define m (list
+           (list 1 2 3 4)
+           (list 4 5 6 6)
+           (list 6 7 8 9)))
+(dot-product (first  m) (second  m))
+;; => 56
+
+(define (matrix-*-vector m v)
+  (map m))
+
+(matrix-*-vector m (first m))
+
+
 
