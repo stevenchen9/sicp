@@ -1495,3 +1495,17 @@
 (fold-left + 0 (list 1 2 3))
 ;; => 6
 
+;; 2.39
+(define (reverse sequence)
+  (fold-right (lambda (next res)
+                (append res (list next)))
+              null sequence))
+(reverse (list 1 2 3 4))
+;; => (4 3 2 1)
+(define (reverse sequence)
+  (fold-left (lambda (result next)
+               (append (list next) result))
+             null sequence))
+(reverse (list 1 2 3 4))
+;; => (4 3 2 1)
+
