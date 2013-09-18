@@ -1,3 +1,6 @@
+* Chapter 1-2
+** Homeworks
+
 (define (assert-equal x y)
   (if (equal? x y)
       #t
@@ -38,18 +41,18 @@
 (define (>= x y)
   (not (< x y)))
 
-;; 1.2
+*** 1.2
 (/ (+ 5 4 (- 2 (- 3 (+ 6 4/5))))
    (* 3 (- 6 2) (- 2 7)))
-;; 1.3
+*** 1.3
 (define (sq x) (* x x))
 (define (sum-of-squares2 x y z)
   (+ (sq x) (sq y) (sq z)))
 (sum-of-squares2 1 2 3)
-;; 1.4
+*** 1.4
 (define (a-plus-abs-b a b)
   ((if (> b 0) + -) a b))
-;; 1.5
+*** 1.5
 (define (p) (p))
 (define (test x y)
   (if (= x 0)
@@ -77,7 +80,7 @@
 (sqrt (+ (sqrt 2) (sqrt 3)))
 (square (sqrt 1000))
 
-;; 1.7
+*** 1.7
 (define (sqrt-iter-precise guess x old-guess)
   (if (< (abs (- guess old-guess)) .00001)
       guess
@@ -90,7 +93,7 @@
   (sqrt-iter-precise 1.0 x x))
 (square (sqrt-precise 40))
 
-;;1.8
+*** 1.8
 (define (cube x)
   (* x x x))
 
@@ -138,7 +141,7 @@
 
 (factorial 40)
 
-;; 1.10
+*** 1.10
 (define (A x y)
   (cond ((= y 0) 0)
         ((= x 0) (* 2 y))
@@ -182,7 +185,7 @@
 
 (count-change 100)
 
-;; 1.11
+*** 1.11
 (define (f n)
   (if (< n 3)
       n
@@ -201,7 +204,7 @@
 (f 10) ;;1892 
 (f 12) ;;1892 
 
-;; 1.12
+*** 1.12
 ;;    1  
 ;;   1 1  
 ;;  1 2 1  
@@ -218,7 +221,7 @@
        (assert-equal (pascal-triangle 5 3) 6)
        (assert-equal (pascal-triangle 1 1) 1))
 
-;; 1.15
+*** 1.15
 (define (cube x) (* x x x))
 (define (p x)
   (print "x")
@@ -259,7 +262,7 @@
         (else (* b (fast-expt b (- n 1))))))
 (fast-expt 40 50)
 
-;; 1.17
+*** 1.17
 (define (double x)
   (* 2 x))
 (define (halve x)
@@ -276,7 +279,7 @@
 (tests (assert-equal (fast-mult 5 5) 25)
        (assert-equal (fast-mult 5 4) 20))
 
-;; 1.18
+*** 1.18
 (define (mult-i x y)
   (mult-iter x y 0))
 (define (mult-iter x y product)
@@ -293,7 +296,7 @@
 (tests (assert-equal (mult-i 5 5) 25)
        (assert-equal (mult-i 5 4) 20))
 
-;; 1.19
+*** 1.19
 
 (define (fib n)
   (fib-iter 1 0 0 1 n))
@@ -789,7 +792,7 @@
 (define seg1 (make-segment p1 p2))
 (print-point (midpoint-segment seg1))
 
-;;2.3
+*** 2.3
 (define (make-rect p1 p2 p3 p4)
   (list p1 p2 p3 p4))
 (define (seg-length p1 p2)
@@ -829,7 +832,7 @@
 (define (car z) (z 0))
 (define (cdr z) (z 1))
 
-;;2.4
+*** 2.4
 (define (cons x y)
   (lambda (m) (m x y)))
 (define (car z)
@@ -839,7 +842,7 @@
 (car (cons 1 2))
 (cdr (cons 1 2))
 
-;;2.5
+*** 2.5
 (define (cons x y)
   (* (expt 2 x)
      (expt 3 y)))
@@ -858,7 +861,7 @@
 (car pair) ;;3
 (cdr pair) ;;4
 
-;;2.6
+*** 2.6
 (define zero (lambda (f) (lambda (x) x)))
 (define (add-1 n)
   (lambda (f) (lambda (x) (f ((n f) x)))))
@@ -907,13 +910,13 @@
   (mul-interval x
                 (make-interval (/ 1.0 (upper-bound y))
                                (/ 1.0 (lower-bound y)))))
-;; 2.7
+***  2.7
 (define (make-interval a b) (cons a b))
 
 (define (upper-bound a) (cdr a))
 (define (lower-bound a) (car a))
 
-;; 2.8
+***  2.8
 
 (define (sub-interval x y)
   (make-interval (- (lower-bound x) (lower-bound y))
@@ -960,7 +963,7 @@
       list2
       (cons (car list1) (append (cdr list1) list2))))
 
-;;2.17
+*** 2.17
 (define (last-pair l)
   (define (last-iter il prev)
     (if (null? il)
@@ -971,7 +974,7 @@
 (last-pair (list 23 72 149 34))
 ;; => (34)
 
-;;2.18
+*** 2.18
 ;; Reverses a list
 (define (reverse li)
   (if (= 1 (length li))
@@ -981,7 +984,7 @@
 (reverse (list 1 4 9 16 25))
 ;; => (25 16 9 4 1)
 
-;; 2.19
+***  2.19
 
 
 (define (count-change amount)
@@ -1007,7 +1010,7 @@
 (cc 100 us-coins)
 (cc 100 uk-coins)
 
-;; 2.20
+***  2.20
 ;; A . in a parameter list will put all parameters after into a list
 (define (same-parity first . rest)
   (cons first
@@ -1051,7 +1054,7 @@
 (scale-list (list 1 2 3) 2)
 ;; => (2 4 6)
 
-;; 2.21
+***  2.21
 (define (square-list items)
   (if (null? items)
       null
@@ -1067,7 +1070,7 @@
 (square-list (list 1 2 3 4))
 ;; => (1 4 9 16)
 
-;; 2.22
+***  2.22
 (define (square x)
   (* x x))
 (define (square-list items)
@@ -1114,7 +1117,7 @@
 (square-list (list 1 2 3 4))
 ;; => (1 4 9 16)
 
-;; 2.23
+***  2.23
 (define (for-each items fun)
   (map items fun)
   null)
@@ -1138,7 +1141,7 @@
 (count-leaves x) ;; => 4
 (count-leaves (list x x)) ;; => 8
 
-;; 2.24
+***  2.24
 (list 1 (list 2 (list 3 4)))
 ;; => (1 (2 (3 4)))
 
@@ -1151,14 +1154,14 @@
 ;;          /    \
 ;;         3      4 
 
-;; 2.25
+***  2.25
 (define x (list 1 3 (list 5 7) 9))
 (car (cdr (car (cdr (cdr x)))))
 ;; => 7
 (car (cdaddr x))
 ;; => 7
 
-;; 2.26
+***  2.26
 (define x (list 1 2 3))
 (define y (list 4 5 6))
 (append x y)
@@ -1168,7 +1171,7 @@
 (list x y)
 ;; => ((1 2 3) (4 5 6))
 
-;; 2.27 Deep Reverse
+***  2.27 Deep Reverse
 (define x (list (list 1 2) (list 3 4) (list 5 6)))
 (reverse x)
 ;; => ((3 4) (1 2))
@@ -1187,7 +1190,7 @@
 ;; => ((6 5) (4 3) (2 1))
 
 
-;; 2.28
+***  2.28
 (define x (list (list 1 2) (list 3 4)))
 
 ;; ((1 2) (3 4))
@@ -1204,7 +1207,7 @@
 (fringe (list x x))
 ;; => (1 2 3 4 1 2 3 4)
 
-;; 2.29
+***  2.29
 (define (make-mobile left right)
   (cons left right))
 (define (make-branch length structure)
@@ -1260,7 +1263,7 @@
              (* sub-tree factor)))
        tree))
 
-;; 2.30
+***  2.30
 ;; iteratively
 (define (walk-tree tree func)
   (cond ((null? tree) null)
@@ -1288,10 +1291,10 @@
 (square-tree t) 
 ;; => (1 (4 (9 16) 25) (36 49))
 
-;; 2.31
+***  2.31
 ;; See above
 
-;; 2.32
+***  2.32
 (define (subsets s)
   (if (null? s)
       (list null)
@@ -1301,7 +1304,11 @@
                      rest)))))
 (subsets (list 1 2 3))
 
-;; 2.2.3 Seqs as interfaces
+* Chapter 2
+** 2.2.3 Sequences as Conventional Interfaces
+*** Concepts
+   By using the concept of a sequence, we can abstract over
+   different concepts, like map, fold, accumulate, filter
 
 ;; Both of these functions do: Enumerate, Filter, Map, Accumulate
 ;; 1. Enumerate -> tree-leaves
@@ -1409,8 +1416,7 @@
 (product-of-squares-of-odd-elements (list 1 2 3 4 5))
 ;; => 225
 
-
-;; 2.33
+*** 2.33
 (define (map p sequence)
   (accumulate (lambda (x y) (cons (p x) y))
               null
@@ -1425,7 +1431,7 @@
   (accumulate (lambda (x y) (+ 1 y)) 0 sequence))
 (length (list 1 2 3 4 5))
 
-;; 2.34
+*** 2.34
 (define (horner-eval x coefficient-sequence)
   (accumulate (lambda (this-coeff higher-terms)
                 (+ (* x higher-terms) this-coeff))
@@ -1435,7 +1441,7 @@
 (horner-eval 2 (list 1 3 0 5 0 1))
 ;; => 79
 
-;; 2.25
+*** 2.25
 ;; Used the enumerate to "walk" the tree contents,
 ;; returning 1 for each element
 (define (count-leaves t)
@@ -1444,7 +1450,7 @@
 (define x (cons (list 1 2) (list 3 4)))
 (count-leaves (list x x))
 
-;; 2.26
+*** 2.26
 (define (accumulate-n op init seqs)
   (if (null? (car seqs))
       null
@@ -1459,7 +1465,7 @@
 (accumulate-n + 0 x)
 ;; => (22 26 30)
 
-;; 2.27
+*** 2.27
 (define (dot-product v w)
   (accumulate + 0 (map * v w)))
 
@@ -1470,7 +1476,7 @@
 (dot-product (first  m) (second  m))
 ;; => 56
 
-;; 2.28
+*** 2.28
 (define (fold-left op initial sequence)
   (define (iter result rest)
     (if (null? rest)
@@ -1485,7 +1491,7 @@
 (fold-left / 1 (list 1 2 3))
 ;; => 1/6
 (fold-right list null (list 1 2 3))
-;; => (1 (2 (3 ()))
+;; => (1 (2 (3 ())))
 (fold-left list null (list 1 2 3))
 ;; => (((() 1) 2) 3)
 
@@ -1495,7 +1501,8 @@
 (fold-left + 0 (list 1 2 3))
 ;; => 6
 
-;; 2.39
+*** 2.39
+#+BEGIN_SRC scheme
 (define (reverse sequence)
   (fold-right (lambda (next res)
                 (append res (list next)))
@@ -1540,3 +1547,8 @@
           sequence))
 
 (permutations (list 1 2 3 4))
+(define (remove item sequence)
+  (filter (lambda (x) (not (= x item)))
+          sequence))
+#+END_SRC
+    
