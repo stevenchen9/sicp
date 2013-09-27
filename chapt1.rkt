@@ -1502,53 +1502,66 @@
 ;; => 6
 
 *** 2.39
-#+BEGIN_SRC scheme
-(define (reverse sequence)
-  (fold-right (lambda (next res)
-                (append res (list next)))
-              null sequence))
-(reverse (list 1 2 3 4))
-;; => (4 3 2 1)
-(define (reverse sequence)
-  (fold-left (lambda (result next)
-               (append (list next) result))
-             null sequence))
-(reverse (list 1 2 3 4))
-;; => (4 3 2 1)
+  (define (reverse sequence)
+    (fold-right (lambda (next res)
+                  (append res (list next)))
+                null sequence))
+  (reverse (list 1 2 3 4))
+  ;; => (4 3 2 1)
+  (define (reverse sequence)
+    (fold-left (lambda (result next)
+                 (append (list next) result))
+               null sequence))
+  (reverse (list 1 2 3 4))
+  ;; => (4 3 2 1)
 
-(define (flatmap proc seq)
-  (accumulate append null (map proc seq)))
+*** Nested Mappings
+  (define (flatmap proc seq)
+    (accumulate append null (map proc seq)))
+  
+  (define (prime-sum? pair)
+    (prime? (+ (car pair) (cadr pair))))
+  
+  (define (make-pair-sum pair)
+    (list (car pair) (cadr pair) (+ (car pair) (cadr pair))))
+  
+  (define (prime-sum-pairs n)
+    (map make-pair-sum
+         (filter prime-sum?
+                 (flatmap
+                  (lambda (i)
+                    (map (lambda (j) (list i j))
+                         (enumerate-interval 1 (- i 1))))
+                  (enumerate-interval 1 n)))))
+  
+  (define (permutations s)
+    (if (null? s)
+        (list null)
+        (flatmap (lambda (x)
+                   (map (lambda (p) (cons x p))
+                        (permutations (remove x s))))
+                 s)))
+  
+  (define (remove item sequence)
+    (filter (lambda (x) (not (= x item)))
+            sequence))
+  
+  (permutations (list 1 2 3 4))
+  (define (remove item sequence)
+    (filter (lambda (x) (not (= x item)))
+            sequence))
+*** 2.40
+*** 2.42
+    
+** 2.2.4 Example: A Picture Language
 
-(define (prime-sum? pair)
-  (prime? (+ (car pair) (cadr pair))))
+(define (flipped-pairs painter)
+  (let ((painter2 (beside painter (flip-vert painter))))
+    (below painter2 painter2)))
 
-(define (make-pair-sum pair)
-  (list (car pair) (cadr pair) (+ (car pair) (cadr pair))))
 
-(define (prime-sum-pairs n)
-  (map make-pair-sum
-       (filter prime-sum?
-               (flatmap
-                (lambda (i)
-                  (map (lambda (j) (list i j))
-                       (enumerate-interval 1 (- i 1))))
-                (enumerate-interval 1 n)))))
 
-(define (permutations s)
-  (if (null? s)
-      (list null)
-      (flatmap (lambda (x)
-                 (map (lambda (p) (cons x p))
-                      (permutations (remove x s))))
-               s)))
 
-(define (remove item sequence)
-  (filter (lambda (x) (not (= x item)))
-          sequence))
-
-(permutations (list 1 2 3 4))
-(define (remove item sequence)
-  (filter (lambda (x) (not (= x item)))
-          sequence))
-#+END_SRC
+  
+  
     
