@@ -1558,6 +1558,77 @@
 (define (flipped-pairs painter)
   (let ((painter2 (beside painter (flip-vert painter))))
     (below painter2 painter2)))
+(define wave4 (flipped-pairs wave))
+(define (right-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (right-split painter (- n 1))))
+        (beside painter (below smaller smaller)))))
+
+(define (corner-split painter n)
+  (if (= n 0)
+      painter
+      (let ((up (up-split painter (- n 1)))
+            (right (right-split painter (- n 1))))
+        (let ((top-left (beside up up))
+              (bottem-right (below right right))
+              (corner (corner-split painter (- n 1))))
+          (beside (below painter top-left)
+                  (below bottem-right corner))))))
+* 2.3 Symbolic Data
+** 2.3.1 Quotation
+
+Quoting is similar to what you would do when asking someone to
+say their name: "say your name" => "steve", or, if you wanted
+them to say those exact words, you would say,
+"say 'your name'" => "your name". In this way, we "quote" to
+force the interpreter to see it as a data object, not an
+expression.
+
+(define a 1)
+(define b 2)
+(list a b)
+;; => (1 2) 
+
+(list 'a 'b)
+;; => (a b)
+
+(car '(a b c))
+;; => a
+
+(cdr '(a b c))
+;; => (b c) 
+
+;; Finds the rest of the list starting with the first matching
+(define (memq item x)
+  (cond ((null? x) false)
+        ((eq? item (car x)) x)
+        (else (memq item (cdr x)))))
+
+(memq 'apple '(pair banana prune))
+;; => #f
+(memq 'apple '(pear (apple sauce) y apple pear))
+;; => (apple pear)
+
+*** 2.53
+(list 'a 'b 'c)
+;; => (a b c)
+(list (list 'george))
+;; => ((george))
+(cdr '((x1 x2) (y1 y2)))
+;; => ((y1 y2))
+(cadr '((x1 x2) (y1 y2)))
+;; => (y1 y2)
+(pair? (car '(a short list)))
+;; => #f
+(memq 'red '((red shoes) (blue socks)))
+;; => #f
+(memq 'red '(red shoes blue socks))
+;; => (red shoes blue socks)
+
+
+
+
 
 
 
