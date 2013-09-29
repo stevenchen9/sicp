@@ -1626,10 +1626,30 @@ expression.
 (memq 'red '(red shoes blue socks))
 ;; => (red shoes blue socks)
 
+*** 2.54
+(equal? '(this is a list) '(this is a list))
+;; => #t
+(equal? '(this is a list) '(this (is a) list))
+;; => #f
 
+;; Reimplementing equal? in terms of eq? on symbols
+(define (equal? l1 l2)
+  (cond
+   ((and (pair? l1) (pair? l2))
+    (and (eq? (car l1) (car l2))
+         (equal? (cdr l1) (cdr l2))))
+   ((and (not (pair? l1))
+         (not (pair? l2))) (eq? l1 l2))
+   (else #f)))
 
-
-
+(equal? 'a 'b)
+;; => #f
+(equal? 'a 'a)
+;; => #t
+(equal? '(test a) '(test a))
+;; => #t
+(equal? '(test a) '(test b))
+;; => #f
 
 
 
