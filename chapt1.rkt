@@ -1651,6 +1651,17 @@ expression.
 (equal? '(test a) '(test b))
 ;; => #f
 
+*** 2.55
+(car ''abricadabra)
+;; => quote
+
+The 'x is syntactual sugar over (quote x). By "expanding"
+the double quote, we see something like (quote (quote x)).
+Calling the car function to that returned list returns the
+first element, the symbol 'quote.
+
+
+
 
 
   
