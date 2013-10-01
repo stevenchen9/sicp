@@ -1713,7 +1713,35 @@ Making a differentiation function example
 ;; (deriv '(* x y) 'x) => should be just y...
 
 ;; To do this we shouldn't need to change our derivation
-;; algorithm at all, just the representation of the data.
+;; algorithm at all, just the "constructor" of the
+;; representation of the data.
+
+(define (=number? exp num)
+  (and (number? exp) (= exp num)))
+(define (make-sum a1 a2)
+  (cond ((=number? a1 0) a2)
+        ((=number? a2 0) a1)
+        ((and (number? a1) (number? a2)) (+ a1 a2))
+        (else (list '+ a1 a2))))
+
+(define (make-product m1 m2)
+  (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+        ((=number? m1 1) m2)
+        ((=number? m2 1) m1)
+        (else (list '* m1 m2))))
+
+(deriv '(+ x 3) 'x)
+;; => 1
+(deriv '(* x y) 'x)
+;; => y
+(deriv '(* (* x y) (+ x 3)) 'x)
+;; => (+ (* x y) (* y (+ x 3)))
+
+;; The first two are fully simplified, but the last is not
+
+
+
+
 
 
 
