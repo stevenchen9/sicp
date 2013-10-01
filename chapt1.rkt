@@ -1680,6 +1680,40 @@ Making a differentiation function example
         (else
          (error "unknown expression type -- DERIV" exp))))
 
+;; The question then becomes how to structure the data,
+;; as the "api" has already been defined
+
+(define (variable? x) (symbol? x))
+(define (same-variable? v1 v2)
+  (and (variable? v1) (variable? v2) (eq? v1 v2)))
+
+(define (make-sum a1 a2) (list '+ a1 a2))
+(define (make-product m1 m2) (list '* m1 m2))
+(define (sum? x)
+  (and (pair? x) (eq? (car x) '+)))
+(define (addend s) (cadr s))
+(define (augend s) (caddr s))
+(define (product? x)
+  (and (pair? x) (eq? (car x) '*)))
+(define (multiplier p) (cadr p))
+(define (multiplicand p) (caddr p))
+
+(deriv '(+ x 3) 'x)
+;; => (+ 1 0)
+(deriv '(* x y) 'x)
+;; => (+ (* x 0) (* y 1))
+(deriv '(* (* x y) (+ x 3)) 'x)
+;; => (+ (* (* x y) (+ 1 0))
+;;       (* (+ (* x 0) (* 1 y))
+;;          (+ x 3)))
+
+;; This works, but it is 'unsimplified' the results
+;; have not been clarified.
+
+;; (deriv '(* x y) 'x) => should be just y...
+
+;; To do this we shouldn't need to change our derivation
+;; algorithm at all, just the representation of the data.
 
 
 
