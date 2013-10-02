@@ -1739,10 +1739,50 @@ Making a differentiation function example
 
 ;; The first two are fully simplified, but the last is not
 
+*** 2.56
+;; Including exponents in the deriv function
+(define (exponentiation? x)
+  (and (pair? x) (eq? (car x) '**)))
+(define (base x) (cadr x))
+(define (exponent x) (caddr x))
 
+(define (make-exponentiation base exp)
+  (cond ((=number? exp 0) 1)
+        ((=number? exp 1) base)
+        (else (list '** base exp))))
 
+(define (deriv-exponent exp var)
+  (make-product (exponent exp)
+                (make-product
+                 (make-exponentiation (base exp)
+                                      (- (exponent exp) 1))
+                 (deriv (base exp) var))))
 
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp)
+         (if (same-variable? exp var) 1 0))
+        ((exponentiation? exp) (deriv-exponent exp var))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum
+          (make-product (multiplier exp)
+                        (deriv (multiplicand exp) var))
+          (make-product (deriv (multiplier exp) var)
+                        (multiplicand exp))))
+        (else
+         (error "unknown expression type -- DERIV" exp))))
 
+(deriv '(** x 1) 'x)
+;; => 1
+(deriv '(** x 0) 'x)
+;; => 0
+(deriv '(** x 2) 'x)
+;; => (* 2 x) 
+(deriv '(** x 3) 'x)
+;; => (* 3 (** x 2))
 
 
 
