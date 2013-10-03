@@ -1784,8 +1784,46 @@ Making a differentiation function example
 (deriv '(** x 3) 'x)
 ;; => (* 3 (** x 2))
 
+*** 2.58
+**** a
+;; Making an infix set of selectors, e.g.: (1 + 1)
+(define (sum? x)
+  (and (pair? x) (eq? (cadr x) '+)))
+(define (addend s) (car s))
+(define (augend s) (caddr s))
+(define (product? x)
+  (and (pair? x) (eq? (cadr x) '*)))
+(define (multiplier p) (car p))
+(define (multiplicand p) (caddr p))
 
+(define (exponentiation? x)
+  (and (pair? x) (eq? (cadr x) '**)))
+(define (base x) (car x))
+(define (exponent x) (caddr x))
 
+(define (make-sum a1 a2)
+  (cond ((=number? a1 0) a2)
+        ((=number? a2 0) a1)
+        ((and (number? a1) (number? a2)) (+ a1 a2))
+        (else (list a1 '+ a2))))
+(define (make-product m1 m2)
+  (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+        ((=number? m1 1) m2)
+        ((=number? m2 1) m1)
+        (else (list m1 '* m2))))
+(define (make-exponentiation base exp)
+  (cond ((=number? exp 0) 1)
+        ((=number? exp 1) base)
+        (else (list base '** exp))))
+
+(deriv '(x ** 1) 'x)
+;; => 1
+(deriv '(x ** 0) 'x)
+;; => 0
+(deriv '(x ** 2) 'x)
+;; => (2 * x) 
+(deriv '(x ** 3) 'x)
+;; => (3 * (x ** 2))
 
   
   
