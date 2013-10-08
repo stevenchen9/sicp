@@ -1830,12 +1830,16 @@ Making a differentiation function example
 **** b
 ;; Making a set of selectors for standard algebraic notation
 
+;; Sum would be any list with a + and no *
 (define (sum? x)
-  (and (pair? x) (eq? (cadr x) '+)))
+  (and (pair? x)
+       (memq '+ x)
+       (not (memq '* x))))
+(define (product? x)
+  (and (pair? x) (memq '* x)))
+ 
 (define (addend s) (car s))
 (define (augend s) (caddr s))
-(define (product? x)
-  (and (pair? x) (eq? (cadr x) '*)))
 (define (multiplier p) (car p))
 (define (multiplicand p) (caddr p))
 
@@ -1844,24 +1848,21 @@ Making a differentiation function example
 (define (base x) (car x))
 (define (exponent x) (caddr x))
 
-(define (make-sum a1 a2)
-  (cond ((=number? a1 0) a2)
-        ((=number? a2 0) a1)
-        ((and (number? a1) (number? a2)) (+ a1 a2))
-        (else (list a1 '+ a2))))
-(define (make-product m1 m2)
-  (cond ((or (=number? m1 0) (=number? m2 0)) 0)
-        ((=number? m1 1) m2)
-        ((=number? m2 1) m1)
-        (else (list m1 '* m2))))
-(define (make-exponentiation base exp)
-  (cond ((=number? exp 0) 1)
-        ((=number? exp 1) base)
-        (else (list base '** exp))))
-
 (define (memq item x)
   (cond ((null? x) false)
         ((eq? item (car x)) x)
         (else (memq item (cdr x)))))
-  
-    
+
+(define (all-before item li)
+  (define (iter ret lis)
+    (cond ((and (null? lis) ret
+                (eq? item (car lis))) ret)
+          (else (iter (append ret (list (car lis)))
+                      (cdr lis)))))
+  (iter '() li))
+(all-before 3 '(1 2 3 4 5))
+
+(deriv '(x + 3 * x + y + 2) 'x)
+;; =>
+
+(+ 1 "1")
