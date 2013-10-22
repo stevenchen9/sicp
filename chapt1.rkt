@@ -1862,7 +1862,48 @@ Making a differentiation function example
   (iter '() li))
 (all-before 3 '(1 2 3 4 5))
 
-(deriv '(x + 3 * x + y + 2) 'x)
-;; =>
+;; (deriv '(x + 3 * x + y + 2) 'x)
 
-(+ 1 "1")
+
+
+** 2.3.3 Example: Representing Sets
+
+Here we use abstractions to define the set
+data structure, again built on a cons cell linked
+list, with functions to abstract the common
+functionality
+
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((equal? x (car set)) true)
+        (else (element-of-set? x (cdr set)))))
+
+(define (adjoin-set x set)
+  (if (element-of-set? x set)
+      set
+      (cons x set)))
+
+;; Filter out any not in both, the "AND"
+(define (intersection-set set1 set2)
+  (cond ((or (null? set1) (null? set2)) '())
+        ((element-of-set? (car set1) set2)
+         (cons (car set1)
+               (intersection-set (cdr set1) set2)))
+        (else (intersection-set (cdr set1) set2))))
+
+;; (intersection-set '(1 2 3 4 5) '(3 4 5))  => (3 4 5)
+;; (intersection-set '(1 2 3 4) '(1 2 3 7))  => (1 2 3)
+
+
+*** 2.59 - Union Set
+
+;; Show any in either, the "OR"
+(define (union-set set1 set2)
+  (cond ((null? set2) set1)
+        (else (union-set
+               (adjoin-set (car set2) set1)
+               (cdr set2)))))
+
+;; (union-set '(1 2 3 4) '(1 2 3 7 8 9))  => (9 8 7 1 2 3 4)
+
+*** 2.60
