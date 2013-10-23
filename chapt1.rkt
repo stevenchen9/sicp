@@ -1907,3 +1907,12 @@ functionality
 ;; (union-set '(1 2 3 4) '(1 2 3 7 8 9))  => (9 8 7 1 2 3 4)
 
 *** 2.60
+
+;; This implementation of all sets is faster,
+;; as adjoin no longer requires a traveral
+;; therefore neither does union, but element
+;; of set could be longer, as the size can grow
+;; much faster
+(define (adjoin-set x set) (cons x set))
+
+;; (union-set '(1 2 3 4) '(1 2 3 7 8 9))  => (9 8 7 3 2 1 1 2 3 4)
