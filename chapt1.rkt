@@ -1916,3 +1916,34 @@ functionality
 (define (adjoin-set x set) (cons x set))
 
 ;; (union-set '(1 2 3 4) '(1 2 3 7 8 9))  => (9 8 7 3 2 1 1 2 3 4)
+
+*** Ordered Sets
+
+;; An ordered set implementation allows for
+;; an average existence check that is n/2 faster,
+;; but still O(n)
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((= x (car set)) true)
+        ((< x (car set)) false)
+        (else (element-of-set? x (cdr set)))))
+
+;; This intersection-set is much faster from the 
+;; unordered implementation, this is only O(n)
+;; since at most we only iterate through each
+;; list once, rather than through set2
+;; once for each element in set1, which is O(n^2), 
+(define (intersection-set set1 set2)
+  (if (or (null? set1) (null? set2))
+      '()
+      (let ((x1 (car set1))
+            (x2 (car set2)))
+        (cond ((= x1 x2)
+               (cons x1 (intersection-set (cdr set1)
+                                          (cdr set2))))
+              ((< x1 x2)
+               (intersection-set (cdr set1) set2))
+              ((< x2 x1)
+               (intersection-set set1 (cdr set2)))))))
+
+
