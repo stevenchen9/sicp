@@ -1864,8 +1864,6 @@ Making a differentiation function example
 
 ;; (deriv '(x + 3 * x + y + 2) 'x)
 
-
-
 ** 2.3.3 Example: Representing Sets
 
 Here we use abstractions to define the set
@@ -1945,5 +1943,21 @@ functionality
                (intersection-set (cdr set1) set2))
               ((< x2 x1)
                (intersection-set set1 (cdr set2)))))))
+
+*** 2.61 - O(n) Adjoin
+
+;; Traverse the list one by one until the
+;; correct slot is found, then put the element
+;; in as the first element of the cons cell,
+;; with the "rest" in the second slot
+(define (adjoin-set x set)
+  (cond ((null? set) (cons x '()))
+        ((= x (car set)) set)
+        ((< x (car set)) (cons x set))
+        ((> x (car set)) (cons (car set)
+                               (adjoin-set x (cdr set))))))
+
+;;(adjoin-set 5 '(1)) => (1 5)
+;;(adjoin-set 5 '(1 2 3 4 9)) => (1 2 3 4 5 9)
 
 
