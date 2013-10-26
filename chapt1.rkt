@@ -1913,7 +1913,6 @@ functionality
 ;; much faster
 (define (adjoin-set x set) (cons x set))
 
-;; (union-set '(1 2 3 4) '(1 2 3 7 8 9))  => (9 8 7 3 2 1 1 2 3 4)
 
 *** Ordered Sets
 
@@ -1944,12 +1943,13 @@ functionality
               ((< x2 x1)
                (intersection-set set1 (cdr set2)))))))
 
-*** 2.61 - O(n) Adjoin
+*** 2.61 - O(n) Adjoin-set
 
 ;; Traverse the list one by one until the
 ;; correct slot is found, then put the element
 ;; in as the first element of the cons cell,
-;; with the "rest" in the second slot
+;; with the "rest" in the second slot,
+;; basically just a merge sort
 (define (adjoin-set x set)
   (cond ((null? set) (cons x '()))
         ((= x (car set)) set)
@@ -1961,3 +1961,27 @@ functionality
 ;;(adjoin-set 5 '(1 2 3 4 9)) => (1 2 3 4 5 9)
 
 
+*** 2.62 - O(n) Union-set
+
+;; Due to the implicit sorted nature of the
+;; two sets, we can remove the first element from
+;; set1 if it is smaller than the first element
+;; of set2, and viceversa, allowing for at most
+;; a single traversal of either
+(define (union-set set1 set2)
+  (cond ((null? set1) '())
+        ((null? set2) '())
+        ((= (car set1) (car set2))
+         (cons (car set1)
+               (union-set (cdr set1) (cdr set2))))
+        ;; If one is not in the other, and it is already
+        ;; "past", remove it 
+        ((< (car set1) (car set2))
+         (union-set (cdr set1) set2))
+        ((> (car set1) (car set2))
+         (union-set set1 (cdr set2)))))
+
+;; (union-set '(1 2 3 4) '(1 2 3 7 8 9))  => (1 2 3)
+;; (union-set '(2 3 4) '(1 2 3 7 8 9))  => (2 3)
+;; (union-set '() '(1 2 3 7 8 9))  => ()
+;; (union-set '(1 2 3 7 8 9) '())  => ()
