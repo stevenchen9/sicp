@@ -1985,3 +1985,29 @@ functionality
 ;; (union-set '(2 3 4) '(1 2 3 7 8 9))  => (2 3)
 ;; (union-set '() '(1 2 3 7 8 9))  => ()
 ;; (union-set '(1 2 3 7 8 9) '())  => ()
+
+
+*** Sets as Binary Trees
+;; Trees, in any structure, will allow for a
+;; speed up even over our O(n) algorithms, by
+;; halving each time (assuming they are balanced)
+;; the number of paths to search with each step,
+;; reducing to O(log n)
+
+(define (entry tree) (car tree))
+(define (left-branch tree) (cadr tree))
+(define (right-branch tree) (caddr tree))
+(define (make-tree entry left right)
+  (list entry left right))
+
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((= x (entry set)) true)
+        ((< x (entry set))
+         (element-of-set? x (left-branch set)))
+        ((> x (entry set))
+         (element-of-set? x (right-branch set)))))
+
+
+
+
