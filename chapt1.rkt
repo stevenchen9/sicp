@@ -2039,5 +2039,33 @@ functionality
                                           result-list)))))
   (copy-to-list tree '()))
 
+(define x (adjoin-set
+    7 (adjoin-set
+       2 (adjoin-set
+          5 (adjoin-set
+             3 (adjoin-set
+                6 '()))))))
+(tree->list-2 x)
+;; => (2 3 5 6 7)
 
+(tree->list-1 x)
+;; => (2 3 5 6 7)
+
+(define fig2-16a
+  (adjoin-set
+   11 (adjoin-set
+       5 (adjoin-set
+          1 (adjoin-set
+             9 (adjoin-set
+                3 (adjoin-set
+                   7 '())))))))
+
+
+
+
+(tree->list-1 fig2-16a)
+;; => (1 3 5 7 9 11)
+
+(tree->list-2 fig2-16a)
+;; => (1 3 5 7 9 11)
 
