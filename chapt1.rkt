@@ -2051,21 +2051,26 @@ functionality
 (tree->list-1 x)
 ;; => (2 3 5 6 7)
 
-(define fig2-16a
-  (adjoin-set
-   11 (adjoin-set
-       5 (adjoin-set
-          1 (adjoin-set
-             9 (adjoin-set
-                3 (adjoin-set
-                   7 '())))))))
+(define (m-tree elements)
+  (if (null? elements)
+      '()
+      (adjoin-set (car elements)
+                  (m-tree (cdr elements)))))
 
-
-
+(define  fig2-16a (m-tree '(1 5 11 3 9 7))) 
+;; => (11 (5 (1 () (3 () ())) (9 (7 () ()) ())) ())
 
 (tree->list-1 fig2-16a)
 ;; => (1 3 5 7 9 11)
 
 (tree->list-2 fig2-16a)
 ;; => (1 3 5 7 9 11)
+
+(define fig2-16b (m-tree '(11 5 9 1 7 3))) 
+(define fig2-16c (m-tree '(1 7 11 3 9 5))) 
+
+
+
+
+
 
