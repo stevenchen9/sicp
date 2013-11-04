@@ -2062,12 +2062,80 @@ functionality
 
 (tree->list-1 fig2-16a)
 ;; => (1 3 5 7 9 11)
-
 (tree->list-2 fig2-16a)
 ;; => (1 3 5 7 9 11)
 
 (define fig2-16b (m-tree '(11 5 9 1 7 3))) 
+
+(tree->list-1 fig2-16b)
+;; => (1 3 5 7 9 11)
+(tree->list-2 fig2-16b)
+;; => (1 3 5 7 9 11)
+
 (define fig2-16c (m-tree '(1 7 11 3 9 5))) 
+
+(tree->list-1 fig2-16c)
+;; => (1 3 5 7 9 11)
+(tree->list-2 fig2-16c)
+;; => (1 3 5 7 9 11)
+
+
+*** 2.64
+
+;; 2.64a
+
+;; The left side is spit off from the list by
+;; making a partial tree of the first half of the elements
+;; and getting back that and the second half of the elements
+;; as the return value. It stores the left-tree, and then
+;; pulls the first of the unused elements as the "entry"
+;; then takes the rest and then makes a second call to
+;; partial-tree with just those elements. A new tree
+;; is created and the remaining-elements are returned to be
+;; used.
+(define (list->tree elements)
+  (car (partial-tree elements (length elements))))
+
+;; The partial-tree function uses a single list to
+;; return two different parts of state: the tree fragment
+;; and the rest of the unused elemets.
+;;
+;; This gives the function the ability to simultaniously
+;; increase one list while decreasing another, something
+;; otherwise that would be difficult or impossible to
+;; do with only one return value
+;;
+;; => (tree-fragment unused-elements)
+(define (partial-tree elts n)
+  (if (= n 0)
+      ;; This has to return the remaining elements and
+      ;; an empty list which will be used to fill in
+      ;; an empty leaf node
+      (cons '() elts)
+      (let ((left-size (quotient (- n 1) 2)))
+        (let ((left-result (partial-tree elts left-size)))
+          (let ((left-tree (car left-result))
+                (non-left-elts (cdr left-result))
+                (right-size (- n (+ left-size 1))))
+            (let ((this-entry (car non-left-elts))
+                  (right-result (partial-tree (cdr non-left-elts)
+                                              right-size)))
+              (let ((right-tree (car right-result))
+                    (remaining-elts (cdr right-result)))
+                (cons (make-tree this-entry left-tree right-tree)
+                      remaining-elts))))))))
+
+;; Get list size 1
+
+
+(list->tree '(1 3 5 7 9 11))
+;; => (5 (1 () (3 () ())) (9 (7 () ()) (11 () ())))
+;;    5
+;; 1    9
+;;  3  7 11
+
+
+
 
 
 
