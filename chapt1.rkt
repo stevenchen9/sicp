@@ -2082,8 +2082,11 @@ functionality
 
 *** 2.64
 
-;; 2.64a
-
+;; Since we assume the list is already sorted,
+;; we can basically just split the list in half-1 each
+;; time, making a tree out of the left and right sides,
+;; then using the "pivot" as the root node.
+;;
 ;; The left side is spit off from the list by
 ;; making a partial tree of the first half of the elements
 ;; and getting back that and the second half of the elements
@@ -2135,10 +2138,17 @@ functionality
 ;;  3  7 11
 
 
+*** 2.65 - Balanced tree intersection set
 
+(define  (intersection-set tree1 tree2)
+  (cond ((or (null? tree1)
+             (null? tree2)) '())
+        (else
+          (append (intersection-set lefts)
+                    (intersection-set rights)))))
 
-
-
-
+(intersection-set (list->tree '(1 3 5 7 9 11))
+                  (list->tree '(4 5 7)))
+;; => (5 7)
 
 
