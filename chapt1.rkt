@@ -2140,15 +2140,31 @@ functionality
 
 *** 2.65 - Balanced tree intersection set
 
+;; Just use the "tree->list" function
+;; to O(n) convert the tree, then use the
+;; regular O(n) intersection from earlier
 (define  (intersection-set tree1 tree2)
-  (cond ((or (null? tree1)
-             (null? tree2)) '())
-        (else
-          (append (intersection-set lefts)
-                    (intersection-set rights)))))
+  (define (intersection-inner set1 set2)
+    (cond ((or (null? set1)
+               (null? set2)) '())
+          (else
+           (let ((n1 (car set1))
+                 (n2 (car set2)))
+             (cond ((= n1 n2)
+                    (cons n1
+                          (intersection-inner (cdr set1)
+                                              (cdr set2))))
+                   ((< n1 n2)
+                    (intersection-inner (cdr set1) set2))
+                   ((> n1 n2)
+                    (intersection-inner set1 (cdr set2))))))))
+  (intersection-inner (tree->list-2 tree1)
+                      (tree->list-2 tree2)))
+
 
 (intersection-set (list->tree '(1 3 5 7 9 11))
                   (list->tree '(4 5 7)))
 ;; => (5 7)
+
 
 
