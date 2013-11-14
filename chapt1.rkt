@@ -2158,34 +2158,36 @@ functionality
                     (intersection-inner (cdr set1) set2))
                    ((> n1 n2)
                     (intersection-inner set1 (cdr set2))))))))
-  (intersection-inner (tree->list-2 tree1)
-                      (tree->list-2 tree2)))
+  (list->tree (intersection-inner (tree->list-2 tree1)
+                                  (tree->list-2 tree2))))
 
 
 (intersection-set (list->tree '(1 3 5 7 9 11))
                   (list->tree '(4 5 7)))
-;; => (5 7)
+;; => (5 () (7 () ()))
 
+;; A union-set that should be O(n) by converting the tree
+;; to a simplier ordered list, then unioning that, and then
+;; converting it back to a binary tree
 (define  (union-set tree1 tree2)
   (define (union-inner set1 set2)
-    (cond ((null? set1) '())
-          ((null? set2) '())
+    (cond ((null? set1) set2)
+          ((null? set2) set1)
           ((= (car set1) (car set2))
            (cons (car set1)
                  (union-inner (cdr set1) (cdr set2))))
           ;; If one is not in the other, and it is already
-          ;; "past", remove it 
+          ;; "past", add it
           ((< (car set1) (car set2))
-           (union-inner (cdr set1) set2))
+           (cons (car set1) (union-inner (cdr set1) set2)))
           ((> (car set1) (car set2))
-           (union-inner set1 (cdr set2)))))
-  (union-inner (tree->list-2 tree1)
-               (tree->list-2 tree2)))
+           (cons (car set2) (union-inner set1 (cdr set2))))))
+  (list->tree (union-inner (tree->list-2 tree1)
+                           (tree->list-2 tree2))))
 
 
 (union-set (list->tree '(1 3 5 7 9 11))
            (list->tree '(4 5 7)))
-;; => (1 3 4 5 7 9 11)
-
+;; => (5 (3 (1 () ()) (4 () ())) (9 (7 () ()) (11 () ())))
 
 
