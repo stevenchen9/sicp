@@ -2166,5 +2166,26 @@ functionality
                   (list->tree '(4 5 7)))
 ;; => (5 7)
 
+(define  (union-set tree1 tree2)
+  (define (union-inner set1 set2)
+    (cond ((null? set1) '())
+          ((null? set2) '())
+          ((= (car set1) (car set2))
+           (cons (car set1)
+                 (union-inner (cdr set1) (cdr set2))))
+          ;; If one is not in the other, and it is already
+          ;; "past", remove it 
+          ((< (car set1) (car set2))
+           (union-inner (cdr set1) set2))
+          ((> (car set1) (car set2))
+           (union-inner set1 (cdr set2)))))
+  (union-inner (tree->list-2 tree1)
+               (tree->list-2 tree2)))
+
+
+(union-set (list->tree '(1 3 5 7 9 11))
+           (list->tree '(4 5 7)))
+;; => (1 3 4 5 7 9 11)
+
 
 
