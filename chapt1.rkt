@@ -2191,3 +2191,34 @@ functionality
 ;; => (5 (3 (1 () ()) (4 () ())) (9 (7 () ()) (11 () ())))
 
 
+*** Sets and info retrieval
+
+;; A simple example that uses an unordered list as
+;; the concrete data structure for a keyed set
+(define (lookup given-key set-of-records)
+  (cond ((null? set-of-records) false)
+        ((equal? given-key (key (car set-of-records)))
+         (car set-of-records))
+        (else (lookup given-key (cdr set-of-records)))))
+
+
+
+*** 2.66 Binary tree key-ed set for retrieval
+
+(define (key tree) (car tree))
+(define (node tree) (car tree))
+(define (left-branch tree) (cadr tree))
+(define (right-branch tree) (caddr tree))
+
+(define (lookup given-key tree)
+  (cond
+   ((= given-key (key (node tree))) (node tree))
+   ((> given-key (key (node tree)))
+    (lookup given-key (right-branch tree)))
+   ((< given-key (key (node tree)))
+    (lookup given-key (left-branch tree)))))
+
+(define x (list->tree '((1 a) (2 b) (3 c) (4 d) (5 e) (6 f) (7 g))))
+
+(lookup 7 x)
+
