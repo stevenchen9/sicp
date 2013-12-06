@@ -93,3 +93,14 @@
        (ret (decode (encode st sample-tree) sample-tree)))
   (equal? st ret))
 ;; => #t
+
+;; 2.69
+(define (generate-huffman-tree pairs)
+  (successive-merge (make-leaf-set pairs)))
+;; found online, I was too stuck to finish it
+(define (successive-merge set)
+  (cond ((null? set) '())
+        ((null? (cdr set)) (car set))
+        (else (successive-merge
+               (adjoin-set (make-code-tree (car set) (cadr set))
+                           (cddr set))))))
