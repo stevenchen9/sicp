@@ -96,4 +96,54 @@
   (eq? (type-tag z) 'polar))
 
 (define (add-complex z1 z2)
-  (make-from-real-imag (+ )))
+  (make-from-real-imag (+ (real-part z1) (real-part z2))
+                       (+ (imag-part z1) (imag-part z2))))
+
+(define (make-from-real-imag x y)
+  (make-from-real-imag-rectangular x y))
+(define (make-from-real-ang r a)
+  (make-from-mag-ang-polar r a))
+
+;; selecting which function to run based of the "type" of the
+;; data is called "dispatching on type"
+;; this has the weakness of spreading around all the dispatching
+;; functions throughout the codebase with no easy way to see
+;; them all... therefore when adding a new "type", one might
+;; miss a representation
+
+;; we will instead create a table mapping a desired function
+;; to a type's representation of that function,
+;; (put <op> <type> <item>)  => add new mapping
+;; (get <op> <type>)         => retrieve item from map
+
+
+;; New rect "package"
+(define (install-rectangular-package)
+  ;;internal procedures
+  (define (real-part z) (car z))
+  (define (imag-part z) (cdr z))
+  (define (make-from-real-imag x y) (cons x y))
+  (define (magnitude z)
+    (sqrt (+ (square (real-part z))
+             (square (imag-part z)))))
+  (define (angle z)
+    (atan (imag-part z) (real-part z)))
+  (define (make-from-mag-ang r a)
+    (cons (* r (cos a)) (* r (sin a))))
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'rectangular x))
+  (put 'real-part '(rectangular) real-part)
+  (put 'imag-part '(rectangular) imag-part)
+  (put 'magnitude '(rectangular) magnitude)
+  (put 'angle '(rectangular) angle)
+  (put 'make-from-real-imag 'rectangular
+       (lambda (r a) (tag (make-from-mag-ang r a))))
+  'done)
+
+;; This "interfaces" ben's representation to the rest of the
+;; system, preventing naming conflicts with other functions.
+;; Gone is angle-rectangular, because it is now passed as 
+;; an anon function into put, making its internal name
+;; "private", there is no internal "state" either, just
+;; side-effect free functions still dispatched by type
+
