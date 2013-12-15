@@ -199,3 +199,67 @@
   ((get 'make-from-real-imag 'rectangular) x y))
 (define (make-from-mag-ang r a)
   ((get 'make-from-mag-ang 'polar) r a))
+
+
+;; 2.73
+
+;; a long-form manual "type" dispatch example
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum
+          (make-product (multiplier exp)
+                        (deriv (multiplicand exp) var))
+          (make-product (deriv (multiplier exp) var)
+                        (multiplicand exp))))
+        ;;; blah
+        (else (error "unknown expression type -- DERIV" exp))))
+
+;; rewritten in a data-directed style
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        (else ((get 'deriv (operator exp)) (operands exp)
+                var))))
+
+(define (operator exp) (car exp))
+(define (operands exp) (cdr exp))
+
+;; a. Explain what was done above. Why can't we assimilate the predicates number? and same-variable? into the data-directed dispatch?
+;; Neither number or variable have operators, so their interface
+;; would be different. You _could_ force them to have a 'deriv
+;; mapping, but then you would still need to check them beforehand
+;; to pass a bogus value as the parameters to deriv
+
+;; b. Write the procedures for derivatives of sums and products, and the auxiliary code required to install them in the table used by the program above.
+
+(define (make-sum x y) (list '+ x y))
+(define (make-product x y) (list '* x y))
+(define (install-sum-package)
+  ;; internal procedues
+  (define (addend x) (cadr c))
+  (define (augend x) (caddr c))
+  (define (ideriv exp var)
+    (make-sum (deriv (addend exp) var)
+              (deriv (augend exp) var)))
+  ;; public interface 
+  (put 'deriv '(+) ideriv)
+  'done)
+
+(define (install-prod-package)
+  ;; internal procedues
+  (define (multiplier x) (cadr c))
+  (define (multiplicand x) (caddr c))
+  (define (ideriv exp var)
+    (make-sum
+          (make-product (multiplier exp)
+                        (deriv (multiplicand exp) var))
+          (make-product (deriv (multiplier exp) var)
+                        (multiplicand exp))))
+  ;; public interface 
+  (put 'deriv '(*) ideriv)
+  'done)
