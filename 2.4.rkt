@@ -105,7 +105,7 @@
   (make-from-mag-ang-polar r a))
 
 ;; selecting which function to run based of the "type" of the
-;; data is called "dispatching on type"
+;; data is called "dispatching on data"
 ;; this has the weakness of spreading around all the dispatching
 ;; functions throughout the codebase with no easy way to see
 ;; them all... therefore when adding a new "type", one might
@@ -297,3 +297,38 @@
   dispatch)
 
 ;; 2.76
+
+;; - Fastest to add new types
+;; I would say message passing is fastest to add new types,
+;; .. all the information is inside the "type", and therefore
+;; easy to add new types
+
+;; - Fastest to add new operations
+;; The generic dispatch is very easy to add new operations,
+;; you simply add them as needed where they are needed.
+
+;; 2.5 Generic Operators
+
+(define (add x y) (apply-generic 'add x y))
+(define (sub x y) (apply-generic 'sub x y))
+(define (mul x y) (apply-generic 'mul x y))
+(define (div x y) (apply-generic 'div x y))
+
+;; Ordinary package for numbers
+(define (install-scheme-number-package)
+  (define (tag x)
+    (attach-tag 'scheme-number x))
+  (put 'add '(scheme-number scheme-number)
+       (lambda (x y) (tag (+ x y))))
+  (put 'sub '(scheme-number scheme-number)
+       (lambda (x y) (tag (- x y))))
+  (put 'mul '(scheme-number scheme-number)
+       (lambda (x y) (tag (* x y))))
+  (put 'div '(scheme-number scheme-number)
+       (lambda (x y) (tag (/ x y))))
+  (put 'make 'scheme-number
+       (lambda (x) (tag x)))
+  'done)
+
+(define (make-scheme-number n)
+  ((get 'make 'scheme-number) n))
