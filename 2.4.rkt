@@ -407,4 +407,17 @@
   'done)
 
 
-
+;; 2.78
+;; using scheme's internal type for numbers
+(define (attach-tag type-tag contents)
+  (if (number? contents)
+      contents
+      (cons type-tag contents)))
+(define (type-tag datum)
+  (cond ((pair? datum) (car datum))
+        ((number? datum) 'scheme-number)
+        (error "Bad tagged datum -- TYPE-TAG" datum)))
+(define (contents datum)
+  (cond ((pair? datum) (cdr datum))
+        ((number? datum) datum)
+        (error "Bad tagged datum -- CONTENTS" datum)))
