@@ -328,6 +328,8 @@
        (lambda (x y) (tag (/ x y))))
   (put 'make 'scheme-number
        (lambda (x) (tag x)))
+  (put 'equ? '(scheme-number scheme-number)
+       (lambda (x y) (= x y)))
   'done)
 
 (define (make-scheme-number n)
@@ -354,6 +356,9 @@
   (define (div-rat x y)
     (make-rat (* (numer x) (denom y))
               (* (denom x) (numer y))))
+  (define (equali x y)
+    (and (= (numer x) (numer y))
+         (= (denom x) (denom y))))
   ;; public interface
   (define (tag x) (attach-tag 'rational x))
   (put 'add '(rational rational)
@@ -366,6 +371,8 @@
        (lambda (x y) (tag (div-rat x y))))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
+  (put 'equ? '(rational rational)
+       (lambda (x y) (equali x y)))
   'done)
 
 (define (make-rational n d)
