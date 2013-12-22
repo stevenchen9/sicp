@@ -330,6 +330,8 @@
        (lambda (x) (tag x)))
   (put 'equ? '(scheme-number scheme-number)
        (lambda (x y) (= x y)))
+  (put '=zero? 'scheme-number
+       (lambda (x) (= 0 x)))
   'done)
 
 (define (make-scheme-number n)
@@ -373,6 +375,8 @@
        (lambda (n d) (tag (make-rat n d))))
   (put 'equ? '(rational rational)
        (lambda (x y) (equali x y)))
+  (put '=zero? 'rational
+       (lambda (x) (= 0 (numer x))))
   'done)
 
 (define (make-rational n d)
@@ -411,6 +415,13 @@
        (lambda (z1 z2) (tag (make-from-real-imag z1 z2))))
   (put 'make-from-mag-ang 'complex
        (lambda (z1 z2) (tag (make-from-mag-ang z1 z2))))
+  (put 'equ? '(complex complex)
+       (lambda (x y) (and (= (angle x)
+                             (angle y))
+                          (= (magnitude x)
+                             (magnitude y)))))
+  (put '=zero? 'complex
+       (lambda (x) (= 0 (magnitude x))))
   'done)
 
 
