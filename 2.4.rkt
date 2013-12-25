@@ -499,3 +499,33 @@
                                     (list op type-tags)))))))
               (error "No method for these types"
                      (list op type-tags)))))))
+
+;; 2.82 - allow apply-generic to handle more than two arguments
+(define (apply-generic op . args)
+  (define (coerce args types)
+    (if (empty? types)
+        args
+        (let ((type-to-try (car types))
+              (arg-types (map type-tag args)))
+          (let ((type-converters (map
+                                  (lambda (atype)
+                                    (if (= type-to-try atype)
+                                        (lambda (x) x)         ;; no cast needed
+                                        (let ((t1->t2 (get-coercion atype type-to-try)))
+                                          (if t1->t2
+                                              t1->t2
+                                              nil))))
+                                  arg-types)))
+            (if (member nil type-converters)
+                (coerce args (cdr types))
+                (coerce (map (lambda (arg converter) (converter arg))
+                             args
+                             type-converters)
+                        (cdr types)))))))
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map contents args))
+          (apply-generic op
+                         (coerce args (map type-tag args)))))))
+
