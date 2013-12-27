@@ -122,14 +122,19 @@
   ;;internal procedures
   (define (real-part z) (car z))
   (define (imag-part z) (cdr z))
-  (define (make-from-real-imag x y) (cons x y))
   (define (magnitude z)
     (sqrt (+ (square (real-part z))
              (square (imag-part z)))))
   (define (angle z)
     (atan (imag-part z) (real-part z)))
-  (define (make-from-mag-ang r a)
-    (cons (* r (cos a)) (* r (sin a))))
+  (define (make-from-real-imag x y)
+    (if (and (in-tower? x) (in-tower? y))
+        (cons x y)
+        (error "non-real real or imaginary value" (list x y))))
+  (define (make-from-mag-ang r a) 
+    (if (and (real? r) (real? a))
+        (cons (* r (cos a)) (* r (sin a)))
+        (error "non-real magnitude or angle" (list r a))))
   ;; interface to the rest of the system
   (define (tag x) (attach-tag 'rectangular x))
   (put 'real-part '(rectangular) real-part)
@@ -153,14 +158,19 @@
   ;; internal prodcedues
   (define (magnitude z) (car z))
   (define (angle z) (cdr z))
-  (define (make-from-mag-ang r a) (cons r a))
   (define (real-part z)
     (* (magnitude z) (cos (angle z))))
   (define (imag-part z)
     (* (magnitude z) (sin (angle z))))
-  (define (make-from-real-imag x y)
-    (cons (sqrt (+ (square x) (square y)))
-          (atan y x)))
+  (define (make-from-mag-ang r a)
+    (if (and (in-tower? r) (in-tower? a))
+        (cons r a)
+        (error "non-real magnitude or angle" (list r a))))
+  (define (make-from-real-imag x y) 
+    (if (and (in-tower? x) (in-tower? y))
+        (cons (sqrt (+ (square x) (square y)))
+              (atan y x))
+        (error "non-real real or imaginary value" (list x y))))
   ;; public interface 
   (define (tag x) (attach-tag 'polar x))
   (put 'real-part '(polar) real-part)
@@ -332,6 +342,8 @@
        (lambda (x y) (= x y)))
   (put '=zero? 'scheme-number
        (lambda (x) (= 0 x)))
+  (put 'raise 'scheme-number
+       (lambda (x) (make-rational x 1)))
   'done)
 
 (define (make-scheme-number n)
@@ -341,9 +353,6 @@
   ;; internal
   (define (numer x) (car x))
   (define (denom x) (cdr x))
-  (define (make-rat n d)
-    (let ((g (gcd n d)))
-      (cons (/ n g) (/ d g))))
   (define (add-rat x y)
     (make-rat (+ (* (numer x) (denom y))
                  (* (numer y) (denom x)))
@@ -358,6 +367,13 @@
   (define (div-rat x y)
     (make-rat (* (numer x) (denom y))
               (* (denom x) (numer y))))
+  (define (make-rat n d)
+    (if (and (integer? n) (integer? d))
+        (let ((g (gcd n d)))
+          (cons (/ n g) (/ d g)))
+        (error "non-integer numerator or denominator"
+               (list n d))))
+  (define (rational->real r) (make-real (/ (numer r) (denom r))))
   (define (equali x y)
     (and (= (numer x) (numer y))
          (= (denom x) (denom y))))
@@ -377,6 +393,7 @@
        (lambda (x y) (equali x y)))
   (put '=zero? 'rational
        (lambda (x) (= 0 (numer x))))
+  (put-coercion 'rational 'real rational->real)
   'done)
 
 (define (make-rational n d)
@@ -529,3 +546,63 @@
           (apply-generic op
                          (coerce args (map type-tag args)))))))
 
+;; 2.83 - found on http://jots-jottings.blogspot.com/2012/03/sicp-exercise-283-raising-types.html
+(define (install-integer-package)
+  (define (integer->rational i) (make-rational i 1))
+  (define (tag x) (attach-tag 'integer x))    
+  (put 'add '(integer integer) (lambda (x y) (tag (+ x y))))
+  (put 'sub '(integer integer) (lambda (x y) (tag (- x y))))
+  (put 'mul '(integer integer) (lambda (x y) (tag (* x y))))
+  (put 'div '(integer integer) (lambda (x y) (tag (/ x y))))
+  (put 'equ? '(integer integer) (lambda (x y) (= x y)))
+  (put-coercion 'integer 'rational integer->rational)
+  (put 'make 'integer
+       (lambda (x) (if (integer? x)
+                       (tag x)
+                       (error "non-integer value" x))))
+  (put '=zero? '(integer) (lambda (x) (= 0 x)))
+  'done)
+
+(define (make-integer n)
+  ((get 'make 'integer) n))
+
+(define (install-real-package)
+  (define (tag x) (attach-tag 'real x))    
+  (define (real->complex r) (make-complex-from-real-imag r 0))
+  (put 'add '(real real) (lambda (x y) (tag (+ x y))))
+  (put 'sub '(real real) (lambda (x y) (tag (- x y))))
+  (put 'mul '(real real) (lambda (x y) (tag (* x y))))
+  (put 'div '(real real) (lambda (x y) (tag (/ x y))))
+  (put 'equ? '(real real) (lambda (x y) (= x y)))
+  (put 'make 'real
+       (lambda (x) (if (real? x)
+                       (tag x)
+                       (error "non-real value" x))))
+  (put '=zero? '(real)
+       (lambda (x) (= 0 x)))
+  (put-coercion 'real 'complex real->complex)
+  'done)
+
+(define (make-real n)
+  ((get 'make 'real) n))
+
+(define (integer->rational i) (make-rational i 1))
+(define (rational->real r) (make-real (/ (numer r) (denom r))))
+(define (real->complex r) (make-complex-from-real-imag r 0))
+(define tower-of-types '(integer rational real complex))
+
+(define (raise x)
+  (define (apply-raise types)
+    (cond ((null? types)
+           (error "Type not found in the tower-of-types"
+                  (list x tower-of-types)))
+          ((eq? (type-tag x) (car types))
+           (if (null? (cdr types))
+               x
+               (let ((raiser (get-coercion (type-tag x) (cadr types))))
+                 (if raiser
+                     (raiser (contents x))
+                     (error "No coercion procedure found for types"
+                            (list (type-tag x) (cadr types)))))))
+          (else (apply-raise (cdr types)))))
+  (apply-raise tower-of-types))
