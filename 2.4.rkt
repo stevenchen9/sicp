@@ -582,20 +582,37 @@
        (lambda (x) (= 0 x)))
   (put-coercion 'real 'complex real->complex)
   'done)
-
 (define (make-real n)
   ((get 'make 'real) n))
+
+(define number-tower '(integer rational real complex))
+(define (install-number-package)
+  (define (tag x) (attach-tag 'number x))    
+  (define (real->complex r) (make-complex-from-real-imag r 0))
+  (put 'is-type 'number (lambda (x) (member x number-tower)))
+  (put 'make 'number (lambda (x) (tag x)))
+  'done)
+(define (make-number n)
+  ((get 'make 'number) n))
 
 (define (integer->rational i) (make-rational i 1))
 (define (rational->real r) (make-real (/ (numer r) (denom r))))
 (define (real->complex r) (make-complex-from-real-imag r 0))
-(define tower-of-types '(integer rational real complex))
 
-(define (raise x)
+(define (higher? t1 t2 type-tower)
+  (if (eq? t1 t2)
+      false 
+      (< (length (member t1 type-tower))
+         (length (member t2 type-tower)))))
+;; (define tower-of-types '(integer rational real complex))
+;; (higher? 'rational 'integer tower-of-types) => #t
+;; (higher? 'integer 'real tower-of-types) => #f
+
+(define (raise x type-tower)
   (define (apply-raise types)
     (cond ((null? types)
            (error "Type not found in the tower-of-types"
-                  (list x tower-of-types)))
+                  (list x type-tower)))
           ((eq? (type-tag x) (car types))
            (if (null? (cdr types))
                x
@@ -605,4 +622,4 @@
                      (error "No coercion procedure found for types"
                             (list (type-tag x) (cadr types)))))))
           (else (apply-raise (cdr types)))))
-  (apply-raise tower-of-types))
+  (apply-raise type-tower))
