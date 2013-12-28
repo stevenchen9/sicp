@@ -599,16 +599,8 @@
 (define (rational->real r) (make-real (/ (numer r) (denom r))))
 (define (real->complex r) (make-complex-from-real-imag r 0))
 
-(define (higher? t1 t2 type-tower)
-  (if (eq? t1 t2)
-      false 
-      (< (length (member t1 type-tower))
-         (length (member t2 type-tower)))))
-;; (define tower-of-types '(integer rational real complex))
-;; (higher? 'rational 'integer tower-of-types) => #t
-;; (higher? 'integer 'real tower-of-types) => #f
 
-(define (raise x type-tower)
+(define (raise x)
   (define (apply-raise types)
     (cond ((null? types)
            (error "Type not found in the tower-of-types"
@@ -622,4 +614,16 @@
                      (error "No coercion procedure found for types"
                             (list (type-tag x) (cadr types)))))))
           (else (apply-raise (cdr types)))))
-  (apply-raise type-tower))
+  (apply-raise number-tower))
+
+;; 2.84  - raising apply-generic
+
+(define (higher? t1 t2 type-tower)
+  (if (eq? t1 t2)
+      false 
+      (< (length (member t1 type-tower))
+         (length (member t2 type-tower)))))
+;; (define tower-of-types '(integer rational real complex))
+;; (higher? 'rational 'integer tower-of-types) => #t
+;; (higher? 'integer 'real tower-of-types) => #f
+
