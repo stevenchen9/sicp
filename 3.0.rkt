@@ -85,3 +85,16 @@
 ;; => 90
 ((acc 'withdraw) 60)
 ;; => 30
+
+;; 3.1 -- accumulator
+(define (make-accumulator init)
+  (lambda (to-add)
+    (begin (set! init (+ init to-add))
+           init)))
+
+(define A (make-accumulator 5))
+(A 10)
+;; => 15 
+(A 10)
+;; => 25 
+
