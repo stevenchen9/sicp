@@ -121,27 +121,42 @@
 
 ;; 3.3 - Modified make-account
 (define (make-account balance password)
-  (define (withdraw amount)
-    (if (>= balance amount)
-        (begin (set! balance (- balance amount))
-               balance)
-        "Insufficient funds"))
-  (define (deposit amount)
-    (set! balance (+ balance amount))
-    balance)
-  (define (dispatch pass-guess m)
-    (cond ((not (eq? password pass-guess))
-           (lambda (x) "Incorrect password"))
-          ((eq? m 'withdraw) withdraw)
-          ((eq? m 'deposit) deposit)
-          (else (error "Unknown request -- MAKE-ACCOUNT"
-                       m))))
-  dispatch)
+  (let ((invalid-pass-count 0))
+    (define (call-the-cops) "BAD BOYS, BAD BOYS, WHATCHA GUNNA DO?!!")
+    (define (invalid-pass x)
+      (if (= 6 invalid-pass-count)
+          (call-the-cops)
+          (begin
+            (set! invalid-pass-count (+ 1 invalid-pass-count))
+            "Incorrect password")))
+    (define (withdraw amount)
+      (if (>= balance amount)
+          (begin (set! balance (- balance amount))
+                 balance)
+          "Insufficient funds"))
+    (define (deposit amount)
+      (set! balance (+ balance amount))
+      balance)
+    (define (dispatch pass-guess m)
+      (cond ((not (eq? password pass-guess)) invalid-pass)
+            ((eq? m 'withdraw) withdraw)
+            ((eq? m 'deposit) deposit)
+            (else (error "Unknown request -- MAKE-ACCOUNT"
+                         m))))
+    dispatch))
 
 (define acc (make-account 100 'pass))
 ((acc 'pass 'withdraw) 50)
 ;; => 50
 ((acc 'wrong 'withdraw) 60)
 ;; => "Incorrect password"
+((acc 'wrong 'withdraw) 60)
+((acc 'wrong 'withdraw) 60)
+((acc 'wrong 'withdraw) 60)
+((acc 'wrong 'withdraw) 60)
+((acc 'wrong 'withdraw) 60)
+((acc 'wrong 'withdraw) 60)
+;; => "BAD BOYS, BAD BOYS, WHATCHA GUNNA DO?!!"
 
 ;; 3.4 - add "call the cops" to new make-account
+;; see above
