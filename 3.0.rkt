@@ -160,3 +160,29 @@
 
 ;; 3.4 - add "call the cops" to new make-account
 ;; see above
+
+;; Calls to a random function that require the previous
+;; results of the run to execute
+(define rand
+  (let ((x random-init))
+    (lambda ()
+      (set! x (rand-update x))
+      x)))
+
+;; Monte-carlo is a set of experiments that choose randomly
+;; from a set, then making deductions based on the probabilities
+;; of tabulating the results of those experiments
+
+(define (estimiate-pi trials)
+  (sqrt (/ 6 (monte-carlo trials cesaro-test))))
+(define (cesaro-test)
+  (= (gcd (rand) (rand)) 1))
+(define (monte-carlo trials experiment)
+  (define (iter trials-remaining trials-passed)
+    (cond ((= trials-remaining 0)
+           (/ trials-passed trials))
+          ((experiment)
+           (iter (- trials-remaining 1) (+ trials-passed 1)))
+          (else
+           (iter (- trials-remaining 1) trials-passed))))
+  (iter trials 0))
