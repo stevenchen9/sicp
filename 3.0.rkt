@@ -163,6 +163,7 @@
 
 ;; Calls to a random function that require the previous
 ;; results of the run to execute
+(define random-init 4)
 (define rand
   (let ((x random-init))
     (lambda ()
@@ -178,6 +179,8 @@
   (sqrt (/ 6 (monte-carlo trials cesaro-test))))
 (define (cesaro-test)
   (= (gcd (rand) (rand)) 1))
+(define (cesaro-test)
+  (= (gcd (* 100 (random)) (* 100 (random))) 1))
 (define (monte-carlo trials experiment)
   (define (iter trials-remaining trials-passed)
     (cond ((= trials-remaining 0)
@@ -187,10 +190,13 @@
           (else
            (iter (- trials-remaining 1) trials-passed))))
   (iter trials 0))
-
+(estimiate-pi 3)
 ;; trying to use rand-update directly, and what a hassle
 ;; it is to have to store and pass x around, it is really
 ;; a break of encapsulation
+;; Also, our awesome "monte-carlo" runner now has to
+;; be implementation specific, due to the implementation
+;; details of rand
 (define (estimate-pi trials)
   (sqrt (/ 6 (random-gcd-test trials random-init))))
 (define (random-gcd-test trials initial-x)
@@ -208,3 +214,23 @@
                      trials-passed
                      x2))))))
   (iter trials 0 initial-x))
+
+;; while it might be possible to include an "experiment values"
+;; parameter, it still is not a great design
+
+;; 3.5
+(define (estimate-integral P x1 x2 y1 y2 trials))
+(define (random-in-range low high)
+  (let ((range (- high low)))
+    (+ low (random range))))
+
+;; 3.6 - rand that resets
+(define rand 
+  (let ((x random-init))
+    (lambda (action)
+      (cond ((eq? action 'generate)
+             (begin (set! x (rand-update x))
+                    x))
+            ((eq? action 'reset)
+             (lambda (next)
+               (set! x next)))))))
