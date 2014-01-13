@@ -186,3 +186,78 @@
           (else
            (iter (- trials-remaining 1) trials-passed))))
   (iter trials 0))
+(estimiate-pi 3)
+
+;; trying to use rand-update directly, and what a hassle
+;; it is to have to store and pass x around, it is really
+;; a break of encapsulation
+;; Also, our awesome "monte-carlo" runner now has to
+;; be implementation specific, due to the implementation
+;; details of rand
+(define (estimate-pi trials)
+  (sqrt (/ 6 (random-gcd-test trials random-init))))
+(define (random-gcd-test trials initial-x)
+  (define (iter trials-remaining trials-passed x)
+    (let ((x1 (rand-update x)))
+      (let ((x2 (rand-update x1)))
+        (cond ((= trials-remaining 0)
+               (/ trials-passed trials))
+              ((= (gcd x1 x2) 1)
+               (iter (- trials-remaining 1)
+                     (+ trials-passed 1)
+                     x2))
+              (else
+               (iter (- trials-remaining 1)
+                     trials-passed
+                     x2))))))
+  (iter trials 0 initial-x))
+
+;; while it might be possible to include an "experiment values"
+;; parameter, it still is not a great design
+
+;; 3.5
+(define (estimate-integral P x1 x2 y1 y2 trials))
+(define (random-in-range low high)
+  (let ((range (- high low)))
+    (+ low (random range))))
+
+;; 3.6 - rand that resets
+(define rand 
+  (let ((x random-init))
+    (lambda (action)
+      (cond ((eq? action 'generate)
+             (begin (set! x (rand-update x))
+                    x))
+            ((eq? action 'reset)
+             (lambda (next)
+               (set! x next)))))))
+
+;; complicated version of make-withdraw with assignment
+(define (make-simplified-withdraw balance)
+  (lambda (amount)
+    (set! balance (- balance amount))
+    balance))
+(define W (make-simplified-withdraw 25))
+(W 20)
+;; => 5
+(W 10)
+;; => -5
+
+;; make-decrementer does not store a state to mutate, it
+;; is "pure" in that calling it with the same arguments
+;; always returns the same values
+(define (make-decrementer balance)
+  (lambda (amount)
+    (- balance amount)))
+(define D (make-decrementer 25))
+(D 20)
+;; => 5
+(D 10)
+;; => 15
+
+;; Any make-decrementer value can be substitued for any other,
+;; since they are "equal" in what they will return for a given
+;; input. The opposite is true for make-withdraw values,
+;; they are only sometimes equal. Therefore make-decrementer
+;; is "referentially transparent". A function can be said to
+;; be referentially transparent when it does not use assignment.
