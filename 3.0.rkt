@@ -138,7 +138,8 @@
       (set! balance (+ balance amount))
       balance)
     (define (dispatch pass-guess m)
-      (cond ((not (eq? password pass-guess)) invalid-pass)
+      (cond ((eq? m 'authorized) (eq? password pass-guess))
+            ((not (eq? password pass-guess)) invalid-pass)
             ((eq? m 'withdraw) withdraw)
             ((eq? m 'deposit) deposit)
             (else (error "Unknown request -- MAKE-ACCOUNT"
@@ -295,3 +296,24 @@
                  (set! counter (+ counter 1))
                  (iter))))
     (iter)))
+
+;; 3.7 make-joint
+
+(define (make-joint acc base-pass joint-pass)
+  (define (dispatch pass-guess m)
+    (cond ((not (eq? joint-pass pass-guess))
+           (lambda (x) "Invalid password"))
+          ((eq? m 'withdraw) (acc base-pass 'withdraw))
+          ((eq? m 'deposit) (acc base-pass 'deposit))
+          (else (error "Unknown request -- MAKE-ACCOUNT"
+                       m))))
+  dispatch)
+
+(define acc (make-account 100 'pass))
+(define jacc (make-joint acc 'pass 'jpass))
+((jacc 'jpass 'withdraw) 50) 
+;; => 50 
+((jacc 'pass 'withdraw) 50) 
+;; =>a "Invalid password" 
+
+
