@@ -265,3 +265,33 @@
 ;; they are only sometimes equal. Therefore make-decrementer
 ;; is "referentially transparent". A function can be said to
 ;; be referentially transparent when it does not use assignment.
+
+;; functional - no use of asssignment
+;; imperitive - heavy use of assignment
+
+
+;; functional factorial, no assignment
+(define (factorial n)
+  (define (iter product counter)
+    (if (> counter n)
+        product
+        (iter (* counter product)
+              (+ counter 1))))
+  (iter 1 1))
+
+;; imperative factorial, uses assignment to overwrite the
+;; values of product and counter each iteration
+(define (factorial n)
+  (let ((product 1)
+        (counter 1))
+    (define (iter)
+      (if (> counter n)
+          product
+          ;; notice how if the two set!s were done in the
+          ;; other order, the wrong result would be computed!
+          ;; imperative introduces an implicit order where
+          ;; true functional actually assigns both "simultaneously"
+          (begin (set! product (* counter product))
+                 (set! counter (+ counter 1))
+                 (iter))))
+    (iter)))
