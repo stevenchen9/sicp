@@ -316,4 +316,16 @@
 ((jacc 'pass 'withdraw) 50) 
 ;; =>a "Invalid password" 
 
+;; 3.8 - using assignment to "break" an ordered execution of calls
+
+(define f 
+  (let ((va 1))
+    (lambda (x)
+      (begin
+        (set! va (- va x))
+        va))))
+
+(+ (f 0) (f 1)) ;; => 1  
+(+ (f 1) (f 0)) ;;=> 0
+
 
