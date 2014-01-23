@@ -357,3 +357,32 @@
 ;; E5 product = 6, counter = 4, max-count = 6
 ;; E6 product = 24, counter = 5, max-count = 6
 ;; E7 product = 120, counter = 6, max-count = 6
+
+;; 3.10
+
+(define (make-withdraw initial-amount)
+  (let ((balance initial-amount))
+    (lambda (amount)
+      (if (>= balance amount)
+          (begin (set! balance (- balance amount))
+                 balance)
+          "Insufficient funds"))))
+
+
+;; internal definitions
+(define (square x) (* x x))
+(define (average x y) (/ (+ x y) 2))
+(define (sqrt x)
+  (define (good-enough? guess)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  (define (sqrt-iter guess)
+    (if (good-enough? guess)
+        guess
+        (sqrt-iter (improve guess))))
+  (sqrt-iter 1.0))
+
+(sqrt 9)
+
+
