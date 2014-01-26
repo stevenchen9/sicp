@@ -430,3 +430,26 @@ w
 (define (make-cycle x)
   (set-cdr! (last-pair x) x)
   x)
+
+;; 3.14
+(define (mystery x)
+  (define (loop x y)
+    (if (null? x)
+        y
+        (let ((temp (cdr x)))
+          (set-cdr! x y)
+          (loop temp x))))
+  (loop x '()))
+;; E1, x: (a b c d)
+;;     y: ()
+;; E2, x: (b c d)
+;;     y: (a ())
+;; E3, x: (c d)
+;;     y: (b a ())
+;; E3, x: (d)
+;;     y: (c b a ())
+;; E4, x: ()
+;;     y: (d c b a ())
+;; return y -> (d c b a ())
+
+;; The "mystery" function reverses a list in a single pass
