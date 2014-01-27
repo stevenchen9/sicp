@@ -453,3 +453,26 @@ w
 ;; return y -> (d c b a ())
 
 ;; The "mystery" function reverses a list in a single pass
+
+;; 3.16
+
+(define (count-pairs x)
+  (if (not (pair? x))
+      0
+      (+ (count-pairs (car x))
+         (count-pairs (cdr x))
+         1)))
+
+(count-pairs '(() () ()))
+;; => 3
+(define x '((a (b)) (b)))
+(count-pairs (list x))
+;; => 7
+
+(eq? x x)
+(define (count-pairs x)
+  (if (not (pair? x))
+      0
+      (+ (count-pairs (car x))
+         (count-pairs (cdr x))
+         1)))
