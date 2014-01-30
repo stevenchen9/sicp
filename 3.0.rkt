@@ -506,3 +506,39 @@ w
   (count-iter x (mlist)))
 
 
+;; here is a cons/car/cdr implemented in terms of a
+;; closure over a binding
+(define (cons x y)
+  (define (dispatch m)
+    (cond ((eq? m 'car) x)
+          ((eq? m 'cdr) y)
+          (else (error "Undefined operation -- CONS" m))))
+  dispatch)
+(define (car z) (z 'car))
+(define (cdr z) (z 'cdr))
+
+
+(define (ccons x y)
+  (define (set-x! v) (set! x v))
+  (define (set-y! v) (set! y v))
+  (define (dispatch m)
+    (cond ((eq? m 'car) x)
+          ((eq? m 'cdr) y)
+          ((eq? m 'set-car!) set-x!)
+          ((eq? m 'set-cdr!) set-y!)
+          (else (error "Undefined operation -- CONS" m))))
+  dispatch)
+(define (ccar z) (z 'car))
+(define (ccdr z) (z 'cdr))
+(define (set-ccar! z new-val)
+  ((z 'set-car!) new-val)
+  z)
+(define (set-ccdr! z new-val)
+  ((z 'set-cdr!) new-val)
+  z)
+
+(define x (ccons 1 2))
+(define z (ccons x x))
+(set-ccar! (ccdr z) 17)
+(ccar x)
+;; => 17
