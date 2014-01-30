@@ -518,7 +518,7 @@ w
 (define (cdr z) (z 'cdr))
 
 
-(define (ccons x y)
+(define (cons x y)
   (define (set-x! v) (set! x v))
   (define (set-y! v) (set! y v))
   (define (dispatch m)
@@ -528,17 +528,46 @@ w
           ((eq? m 'set-cdr!) set-y!)
           (else (error "Undefined operation -- CONS" m))))
   dispatch)
-(define (ccar z) (z 'car))
-(define (ccdr z) (z 'cdr))
-(define (set-ccar! z new-val)
+(define (car z) (z 'car))
+(define (cdr z) (z 'cdr))
+(define (set-car! z new-val)
   ((z 'set-car!) new-val)
   z)
-(define (set-ccdr! z new-val)
+(define (set-cdr! z new-val)
   ((z 'set-cdr!) new-val)
   z)
 
-(define x (ccons 1 2))
-(define z (ccons x x))
-(set-ccar! (ccdr z) 17)
-(ccar x)
+(define x (cons 1 2))
+(define z (cons x x))
+(set-car! (cdr z) 17)
+(car x)
 ;; => 17
+
+;; The queue will have (front-ptr . rear-ptr)
+(define (front-ptr queue) (car queue))
+(define (rear-ptr queue) (cdr queue))
+
+(define (set-front-ptr! queue item) (set-car! queue item))
+(define (set-rear-ptr! queue item) (set-cdr! queue item))
+
+(define (empty-queue? queue) (null? (front-ptr queue)))
+
+(define (front-queue queue)
+  (if (empty-queue? queue)
+      (error "FRONT called with an empty queue" queue)
+      (car (front-ptr queue))))
+
+(define (insert-queue! queue item)
+  (let ((new-pair (cons item '())))
+    (cond ((empty-queue? queue)
+           (set-front-ptr! queue new-pair)
+           (set-rear-ptr! queue new-pair)
+           queue)
+          (else
+           (set-cdr! (rear-ptr queue) new-pair)
+           (set-rear-ptr! queue new-pair)
+           queue))))
+
+
+
+
