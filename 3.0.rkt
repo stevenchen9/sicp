@@ -491,17 +491,14 @@ w
 ;; => 7
 
 
-;; 3.17 
-(eq? x x) ;; reference equality
-(define (contains? needle haystack)
-  (if (mpair? haystack)
-      (or (eq? needle (mcar haystack))
-          (contains? needle (mcdr haystack)))
-      #f))
+;; reference equality
+(eq? l41 l41) ;; #t
+(eq? l41 l42) ;; #f
 
+;; 3.17 
 (define (count-pairs x)
   (define (count-iter x already-counted)
-    (if (or (not (mpair? x)) (contains? x already-counted))
+    (if (or (not (mpair? x)) (mmemq x already-counted)) 
         0
         (+ (count-iter (mcar x) (mcons x already-counted))
            (count-iter (mcdr x) (mcons x already-counted))
