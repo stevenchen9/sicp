@@ -455,24 +455,57 @@ w
 ;; The "mystery" function reverses a list in a single pass
 
 ;; 3.16
+(require scheme/mpair)
 
 (define (count-pairs x)
-  (if (not (pair? x))
+  (if (not (mpair? x))
       0
-      (+ (count-pairs (car x))
-         (count-pairs (cdr x))
+      (+ (count-pairs (mcar x))
+         (count-pairs (mcdr x))
          1)))
 
-(count-pairs '(() () ()))
+
+(define l31 (mlist 'a 'b 'c))
+
+(define l41 (mlist 'b 'c))
+(define l42 (mlist 'a))
+(set-mcar! l41 l42)
+(set-mcar! (mcdr l41) l42)
+
+(define l71 (mlist 'c))
+(define l72 (mlist 'b))
+(define l73 (mlist 'a))
+(set-mcar! l72 l73)
+(set-mcdr! l72 l73)
+(set-mcar! l71 l72)
+(set-mcdr! l71 l72)
+
+(define linf (mlist 'a 'b 'c))
+(set-mcdr! (mcdr (mcdr linf)) linf)
+
+(count-pairs l31)
 ;; => 3
-(define x '((a (b)) (b)))
-(count-pairs (list x))
+(count-pairs l41)
+;; => 4
+(count-pairs l71)
 ;; => 7
 
-(eq? x x)
+
+;; 3.17 
+(eq? x x) ;; reference equality
+(define (contains? needle haystack)
+  (if (mpair? haystack)
+      (or (eq? needle (mcar haystack))
+          (contains? needle (mcdr haystack)))
+      #f))
+
 (define (count-pairs x)
-  (if (not (pair? x))
-      0
-      (+ (count-pairs (car x))
-         (count-pairs (cdr x))
-         1)))
+  (define (count-iter x already-counted)
+    (if (or (not (mpair? x)) (contains? x already-counted))
+        0
+        (+ (count-iter (mcar x) (mcons x already-counted))
+           (count-iter (mcdr x) (mcons x already-counted))
+           1)))
+  (count-iter x (mlist)))
+
+
