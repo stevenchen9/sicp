@@ -47,3 +47,14 @@
 ;; => {{} b}
 
 ;; 3.21
+(string-append (~a 'a) "b")
+
+(define (print-queue q)
+  (define (inner-print q ret)
+    (if (empty? q)
+        ret
+        (inner-print (mcdr q)
+                     (string-append ret (~a (mcar q))))))
+  (inner-print (mcar q) ""))
+(print-queue q1)
+;; => "ab"
