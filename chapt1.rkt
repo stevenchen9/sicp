@@ -42,17 +42,23 @@
   (not (< x y)))
 
 *** 1.2
+
 (/ (+ 5 4 (- 2 (- 3 (+ 6 4/5))))
    (* 3 (- 6 2) (- 2 7)))
 *** 1.3
+
 (define (sq x) (* x x))
 (define (sum-of-squares2 x y z)
   (+ (sq x) (sq y) (sq z)))
 (sum-of-squares2 1 2 3)
+
 *** 1.4
+
 (define (a-plus-abs-b a b)
   ((if (> b 0) + -) a b))
+
 *** 1.5
+
 (define (p) (p))
 (define (test x y)
   (if (= x 0)
