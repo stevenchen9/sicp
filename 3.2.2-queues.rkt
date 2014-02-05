@@ -144,3 +144,32 @@
 ((q3 'front-delete-deque!))
 ((q3 'rear-delete-deque!))
 (q3 'view)
+
+
+;; Tables
+
+(define (lookup key table)
+  (let ((record (assoc key (cdr table))))
+    (if record
+        (cdr record)
+        false)))
+
+(define (assoc key records)
+  (cond ((null? records) false)
+        ((equal? key (caar records)) (car records))
+        (else (assoc key (cdr records)))))
+
+(define (insert! key value table)
+  (let ((record (assoc key (cdr table))))
+    (if record
+        (set-cdr! record value)
+        (set-cdr! table
+                  (cons (cons key value) (cdr table)))))
+  'ok)
+
+(define (make-table)
+  (list '*table*))
+
+
+;; two-dimensional tables
+
