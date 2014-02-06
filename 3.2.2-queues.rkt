@@ -241,3 +241,47 @@
 (operation-table 'view)
 ;; => {*table* {1 {1 . 35}} {2 {2 . 34}}}
 
+
+;; 3.25
+(define (multi-table same-key?)
+  (let ((local-table (mlist '*table*)))
+    (define (lookup keys)
+      (define (lookup-i keys table)
+        (if (null? keys)
+            false
+            (let ((record (assoc (mcar keys) (mcdr table))))
+              (if record
+                  (if (empty? (mdr keys)) 
+                      (mcdr record)
+                      (lookup-i (mcdr keys) record))
+                  false))))
+      (lookup-i keys local-table))
+    (define (assoc key records)
+      (cond ((null? records) false)
+            ((same-key? key (mcar (mcar records))) (mcar records))
+            (else (assoc key (mcdr records)))))
+    (define (insert! keys value)
+      (define (insert-i keys)
+        (if (empty? keys)
+            (error "missing keys")
+            (let ((subtable (assoc (mcar keys)
+                                   (mcdr local-table))))
+              (if subtable
+                  (let ((record (assoc key-2 (mcdr subtable))))
+                    (if record
+                        (set-mcdr! record value)
+                        (set-mcdr! subtable
+                                   (mcons (mcons key-2 value)
+                                          (mcdr subtable)))))
+                  (set-mcdr! local-table
+                             (mcons (mlist key-1
+                                           (mcons key-2 value))
+                                    (mcdr local-table)))))))
+      (insert-i keys)
+      'ok)
+    (define (dispatch m)
+      (cond ((eq? m 'lookup-proc) lookup)
+            ((eq? m 'insert-proc) insert!)
+            ((eq? m 'view) local-table)
+            (else (error "Unknown operarion -- TABLE" m))))
+    dispatch))
