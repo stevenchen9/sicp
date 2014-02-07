@@ -261,23 +261,19 @@
             ((same-key? key (mcar (mcar records))) (mcar records))
             (else (assoc key (mcdr records)))))
     (define (insert! keys value)
-      (define (insert-i keys)
+      (define (insert-i table keys)
         (if (empty? keys)
             (error "missing keys")
             (let ((subtable (assoc (mcar keys)
-                                   (mcdr local-table))))
+                                   (mcdr table))))
               (if subtable
-                  (let ((record (assoc key-2 (mcdr subtable))))
-                    (if record
-                        (set-mcdr! record value)
-                        (set-mcdr! subtable
-                                   (mcons (mcons key-2 value)
-                                          (mcdr subtable)))))
-                  (set-mcdr! local-table
-                             (mcons (mlist key-1
-                                           (mcons key-2 value))
-                                    (mcdr local-table)))))))
-      (insert-i keys)
+                  (if (empty? (mcdr keys))
+                      (set-mcdr! subtable value)
+                      (insert-i subtable (mcdr keys)))
+                  (set-mcdr! table
+                             (mcons (mlist (mcar keys) value)
+                                    (mcdr table)))))))
+      (insert-i local-table keys)
       'ok)
     (define (dispatch m)
       (cond ((eq? m 'lookup-proc) lookup)
