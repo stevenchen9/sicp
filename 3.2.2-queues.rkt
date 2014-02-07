@@ -251,7 +251,7 @@
             false
             (let ((record (assoc (mcar keys) (mcdr table))))
               (if record
-                  (if (empty? (mdr keys)) 
+                  (if (empty? (mcdr keys)) 
                       (mcdr record)
                       (lookup-i (mcdr keys) record))
                   false))))
@@ -260,6 +260,10 @@
       (cond ((null? records) false)
             ((same-key? key (mcar (mcar records))) (mcar records))
             (else (assoc key (mcdr records)))))
+    (define (make-new-insert keys value)
+      (if (empty? (mcdr keys))
+          (mcons (mcar keys) value)
+          (mlist (mcar keys) (make-new-insert (mcdr keys) value))))
     (define (insert! keys value)
       (define (insert-i table keys)
         (if (empty? keys)
@@ -270,10 +274,9 @@
                   (if (empty? (mcdr keys))
                       (set-mcdr! subtable value)
                       (insert-i subtable (mcdr keys)))
-                  (let ((outer (mlist (mcar keys))))
-                    (set-mcdr! table
-                               (mcons (insert-i outer (mcdr keys))
-                                      (mcdr table))))))))
+                  (set-mcdr! table
+                             (mcons (make-new-insert keys value)
+                                    (mcdr table)))))))
       (insert-i local-table keys)
       'ok)
     (define (dispatch m)
@@ -284,10 +287,14 @@
     dispatch))
 
 
-(define t1 (multi-table eq?))
 (begin
-  ((t1 'insert-proc) (mlist 2 2) 34)      
-  ((t1 'insert-proc) (mlist 1 1) 35)      
-  ((t1 'lookup-proc) (mlist 1 1)))
+  (define t1 (multi-table eq?))   
+  ((t1 'insert-proc) (mlist 2 2 2) 34)      
+  ((t1 'insert-proc) (mlist 1 1 2) 35)      
+  ((t1 'insert-proc) (mlist 1 2 2) 3)      
+  ((t1 'lookup-proc) (mlist 1 2 2)))
 (t1 'view)
-;; => {*table* {1 {1 . 35}} {2 {2 . 34}}}
+;; {*table* {1 {2 {2 . 3}}
+;;             {1 {2 . 35}}}
+;;          {2 {2 {2 . 34}}}}
+
