@@ -270,9 +270,10 @@
                   (if (empty? (mcdr keys))
                       (set-mcdr! subtable value)
                       (insert-i subtable (mcdr keys)))
-                  (set-mcdr! table
-                             (mcons (mlist (mcar keys) value)
-                                    (mcdr table)))))))
+                  (let ((outer (mlist (mcar keys))))
+                    (set-mcdr! table
+                               (mcons (insert-i outer (mcdr keys))
+                                      (mcdr table))))))))
       (insert-i local-table keys)
       'ok)
     (define (dispatch m)
@@ -281,3 +282,12 @@
             ((eq? m 'view) local-table)
             (else (error "Unknown operarion -- TABLE" m))))
     dispatch))
+
+
+(define t1 (multi-table eq?))
+(begin
+  ((t1 'insert-proc) (mlist 2 2) 34)      
+  ((t1 'insert-proc) (mlist 1 1) 35)      
+  ((t1 'lookup-proc) (mlist 1 1)))
+(t1 'view)
+;; => {*table* {1 {1 . 35}} {2 {2 . 34}}}
