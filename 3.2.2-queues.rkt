@@ -298,3 +298,33 @@
 ;;             {1 {2 . 35}}}
 ;;          {2 {2 {2 . 34}}}}
 
+
+;; 3.26
+;; It should be possible to store a reference to a given
+;; key in a sorted list, that would allow for faster access
+;; or even under a tree of cells, one for each initial character
+;; of the key. In such an implementation, the key 'test'
+;; would be found under 't 'e 's 't
+;; The biggest issue with this assuming a restriction on only alpha characters
+;; is that each character could require as many as 26 lookups.
+
+;; Another option would be to store them sorted in a tree,
+;; but that would require the tree to be balanced in order
+;; to provide the most speed benefit.
+
+
+;; 3.27
+
+;; regular fib proc
+(define (fib n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
+
+(define memo-fib
+  (memoize (lambda (n)
+             (cond ((= n 0) 0)
+                   ((= n 1) 1)
+                   (else (+ (memo-fib (- n 1))
+                            (memo-fib (- n 2))))))))
