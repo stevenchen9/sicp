@@ -149,9 +149,9 @@
 ;; Tables
 
 (define (lookup key table)
-  (let ((record (assoc key (cdr table))))
+  (let ((record (assoc key (mcdr table))))
     (if record
-        (cdr record)
+        (mcdr record)
         false)))
 
 (define (assoc key records)
@@ -160,15 +160,15 @@
         (else (assoc key (mcdr records)))))
 
 (define (insert! key value table)
-  (let ((record (assoc key (cdr table))))
+  (let ((record (assoc key (mcdr table))))
     (if record
-        (set-cdr! record value)
-        (set-cdr! table
-                  (cons (cons key value) (cdr table)))))
+        (set-mcdr! record value)
+        (set-mcdr! table
+                  (mcons (mcons key value) (mcdr table)))))
   'ok)
 
 (define (make-table)
-  (list '*table*))
+  (mlist '*table*))
 
 
 ;; two-dimensional tables
@@ -323,7 +323,7 @@
                  (fib (- n 2))))))
 
 (define (memoize f)
-  (let ((table (make-table eq?)))
+  (let ((table (make-table)))
     (lambda (x)
       (let ((previously-computed-result (lookup x table)))
         (or previously-computed-result
@@ -336,4 +336,13 @@
                    ((= n 1) 1)
                    (else (+ (memo-fib (- n 1))
                             (memo-fib (- n 2))))))))
+(memo-fib 2)
+;; (memo-fib 3) => 3
+;;   (memo-fib 2) => 2
+;;     (memo-fib 1) => 1
+;;     (memo-fib 0) => 0
+;;   (memo-fib 1) => gets memoized 1
 
+;; The (memo-fib 1) only is actually executed
+;; once, each time after it uses the pre-determined
+;; value
