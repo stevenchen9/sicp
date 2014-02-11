@@ -345,4 +345,39 @@
 
 ;; The (memo-fib 1) only is actually executed
 ;; once, each time after it uses the pre-determined
-;; value
+;; value, as such it grows proprotional to n 
+
+;; Digital Circuit example
+
+;; a half-adder example api
+(define a (make-wire))
+(define b (make-wire))
+(define c (make-wire))
+
+(define d (make-wire))
+(define e (make-wire))
+(define s (make-wire))
+
+(or-gate a b d)
+(and-gate a b c)
+(inverter c e)
+(and-gate d e s)
+
+;; a better half-adder api
+(define (half-adder a b s c)
+  (let ((d (make-wire)) (e (make-wire)))
+    (or-gate a b d)
+    (and-gate a b c)
+    (inverter c e)
+    (and-gate d e s)
+    'ok))
+
+;; a full-adder using the half-adder "block"
+(define (full-adder a b c-in sum c-out)
+  (let ((s (make-wire))
+        (c1 (make-wire))
+        (c2 (make-wire)))
+    (half-adder b c-in s c1)
+    (half-adder a s sum c2)
+    (or-gate c1 c2 c-out)
+    'ok))
