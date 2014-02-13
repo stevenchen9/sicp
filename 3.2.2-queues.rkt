@@ -430,4 +430,17 @@
     (and-gate a1 inv-to-and-wire output)
     'ok))
 
+;; 3.30
+
+(define (ripple-carry-adder ak bk sk c)
+  (define (ripple-inner as bs ss c-in)
+    (if (pair? as)
+        (let ((c-out (make-wire)))
+          (full-adder (car as) (car bs) c-in (car ss) c-out)
+          (ripple-inner (cdr as) (cdr bs) (cdr ss) c-out))
+        'ok))
+  (if (= (length ak) (length bk) (length sk))
+      (ripple-inner ak bk sk c)
+      (error "This needs an equal count of ak, bk, and sk")))
+
 
