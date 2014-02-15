@@ -1,5 +1,4 @@
 ;; 1 - Intro
-;; 1.1 - Goals - Everyone complete it!
 
 ;; 2 - Overview
 ;; 2.1 - Values
@@ -23,7 +22,7 @@
 
 888
 
-(+ 2 2)
+(* 2 2)
 
 
 (/ 40 2)
@@ -55,10 +54,16 @@
 
 ;; Procedures
 
+;; function times-two(x) {return 2 * x;} 
 (define (times-two x)
   (* 2 x))
 
-(times-two 4)
+(define times-two 4)
+
+(define (square x)
+  (times-two x))
+(square 4)
+
 
 
 
@@ -80,7 +85,9 @@
 
 (define (abs x)
   (cond ((< x 0) (- x))
-        (else x)))
+        (else) x))
+(abs 4)
+
 
 (if <predicate> <then> <else>)
 
@@ -93,3 +100,18 @@
 (and <e1> .... <en>)
 (or <e1> .... <en>)
 (not <e>)
+
+(eq? #!unspecific (result))
+
+(* 3 [5 3 (foo 2) 2]
+   (* 2 4))
+
+
+;; helpful tooling
+paredit
+rainbow parens
+scheme/racket repl
+auto pairs
+
+;; drracket
+
