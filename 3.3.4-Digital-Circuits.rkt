@@ -171,6 +171,27 @@
 (define sum (make-wire))
 (define carry (make-wire))
 (probe 'sum sum)
+(probe 'carry carry)
+
 (half-adder input-1 input-2 sum carry)
+(set-signal! input-1 1)
+(propagate)
+
+(define (make-time-segment time queue)
+  (cons time queue))
+(define (segment-time s) (car s))
+(define (segment-queue s) (cdr s))
+
+(define (make-agenda) (list 0))
+(define (current-time agenda) (car agenda))
+(define (set-current_time! agenda time)
+  (set-car! agenda time))
+(define (segments agenda) (cdr agenda))
+(define (set-segments! agenda segments)
+  (set-cdr! agenda segments))
+(define (first-segment agenda) (car (segments agenda)))
+(define (rest-segment agenda) (cdr (segments agenda)))
+(define (empty-agenda? agenda)
+  (null? (segments agenda)))
 
 

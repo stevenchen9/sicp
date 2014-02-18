@@ -38,9 +38,9 @@
 
 ;; Naming
 
-(define size 2)
+(define size 4)
 
-(* 5 size)
+(* size 2)
 
 
 
@@ -54,11 +54,12 @@
 
 ;; Procedures
 
-;; function times-two(x) {return 2 * x;} 
+;; function times-two(x) {return 2 * x; var t;} 
 (define (times-two x)
   (* 2 x))
 
-(define times-two 4)
+(times-two 5)
+
 
 (define (square x)
   (times-two x))
@@ -73,7 +74,7 @@
 
 
 
-
+;; brandon bloom
 
 
 ;; Conditionals
@@ -84,9 +85,9 @@
        <pn> <en>))
 
 (define (abs x)
-  (cond ((< x 0) (- x))
-        (else) x))
-(abs 4)
+  (cond ((< 4 0) (- 4))
+        (else 4)))
+(abs -4)
 
 
 (if <predicate> <then> <else>)
@@ -101,17 +102,14 @@
 (or <e1> .... <en>)
 (not <e>)
 
-(eq? #!unspecific (result))
-
-(* 3 [5 3 (foo 2) 2]
-   (* 2 4))
 
 
 ;; helpful tooling
 paredit
 rainbow parens
 scheme/racket repl
-auto pairs
+;; smart parens with strict
+
 
 ;; drracket
 
