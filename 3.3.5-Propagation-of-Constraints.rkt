@@ -181,6 +181,11 @@
         (w (make-connector))
         (x (make-connector))
         (y (make-connector)))
+    (probe "U" u)
+    (probe "V" v)
+    (probe "w" w)
+    (probe "x" x)
+    (probe "y" y)
     (multiplier c w u)
     (multiplier v x u)
     (adder v y f)
@@ -192,7 +197,7 @@
 (probe "C temp" C)
 (probe "F temp" F)
 
-(set-value! C 24 'user)
+(set-value! C 25 'user)
 (forget-value! C 'user)
 
 (set-value! F 212 'user)
