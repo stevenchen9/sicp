@@ -196,3 +196,17 @@
 (forget-value! C 'user)
 
 (set-value! F 212 'user)
+
+(define a (make-connector))
+(define b (make-connector))
+(define c (make-connector))
+(adder a b c)
+(constant 20 a)
+(probe "A:" a)
+(probe "B:" b)
+(probe "C:" c)
+
+(set-value! a 2 'user)
+(set-value! b 20 'user)
+(forget-value! b 'user)
+(set-value! c 20 'user)
