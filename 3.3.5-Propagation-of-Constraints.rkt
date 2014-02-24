@@ -6,31 +6,6 @@
 ;; for any missing element.
 
 
-;; Here is a representation of temp conversion using:
-;; 9C = 5(F - 32)
-
-;; Since 9, 5, and 32 are constants, we give them "connectors" to
-;; those values
-
-(define C (make-connector))
-(define F (make-connector))
-(celsuis-fahrenheit-converter C F)
-
-(define (celsuis-fahrenheit-converter c f)
-  (let ((u (make-connector))
-        (v (make-connector))
-        (w (make-connector))
-        (x (make-connector))
-        (y (make-connector)))
-    (multiplier c w u)
-    (multiplier v x u)
-    (adder v y f)
-    (constant 9 w)
-    (constant 5 x)
-    (constant 32 y)
-    'ok))
-
-
 (define (adder a1 a2 sum)
   (define (process-new-value)
     (cond ((and (has-value? a1) (has-value? a2))
@@ -168,4 +143,56 @@
                          request))))
     me))
 
+(define (for-each-except exception procedure list)
+  (define (loop items)
+    (cond ((null? items) 'done)
+          ((eq? (car items) exception) (loop (cdr items)))
+          (else (procedure (car items))
+                (loop (cdr items)))))
+  (loop list))
 
+(define (has-value? connector)
+  (connector 'has-value?))
+(define (get-value connector)
+  (connector 'value))
+(define (set-value! connector new-value informant)
+  ((connector 'set-value!) new-value informant))
+(define (forget-value! connector retractor)
+  ((connector 'forget) retractor))
+(define (connect connector new-constraint)
+  ((connector 'connect) new-constraint))
+
+
+
+
+;; Here is a representation of temp conversion using:
+;; 9C = 5(F - 32)
+
+;; Since 9, 5, and 32 are constants, we give them "connectors" to
+;; those values
+
+(define C (make-connector))
+(define F (make-connector))
+(celsuis-fahrenheit-converter C F)
+
+(define (celsuis-fahrenheit-converter c f)
+  (let ((u (make-connector))
+        (v (make-connector))
+        (w (make-connector))
+        (x (make-connector))
+        (y (make-connector)))
+    (multiplier c w u)
+    (multiplier v x u)
+    (adder v y f)
+    (constant 9 w)
+    (constant 5 x)
+    (constant 32 y)
+    'ok))
+
+(probe "C temp" C)
+(probe "F temp" F)
+
+(set-value! C 24 'user)
+(forget-value! C 'user)
+
+(set-value! F 212 'user)
