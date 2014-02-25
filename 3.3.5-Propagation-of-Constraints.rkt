@@ -57,7 +57,7 @@
                        me))
           ((and (has-value? product) (has-value? m2))
            (set-value! m1
-                       (* (get-value product) (get-value m2))
+                       (/ (get-value product) (get-value m2))
                        me))))
   (define (process-forget-value)
     (forget-value! product me)
@@ -181,11 +181,6 @@
         (w (make-connector))
         (x (make-connector))
         (y (make-connector)))
-    (probe "U" u)
-    (probe "V" v)
-    (probe "w" w)
-    (probe "x" x)
-    (probe "y" y)
     (multiplier c w u)
     (multiplier v x u)
     (adder v y f)
@@ -194,24 +189,17 @@
     (constant 32 y)
     'ok))
 
+
 (probe "C temp" C)
 (probe "F temp" F)
 
 (set-value! C 25 'user)
+;; Probe: C temp = 25
+;; Probe: F temp = 77
 (forget-value! C 'user)
 
 (set-value! F 212 'user)
+;; Probe: F temp = 212
+;; Probe: C temp = 100
 
-(define a (make-connector))
-(define b (make-connector))
-(define c (make-connector))
-(adder a b c)
-(constant 20 a)
-(probe "A:" a)
-(probe "B:" b)
-(probe "C:" c)
 
-(set-value! a 2 'user)
-(set-value! b 20 'user)
-(forget-value! b 'user)
-(set-value! c 20 'user)
