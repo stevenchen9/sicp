@@ -202,4 +202,60 @@
 ;; Probe: F temp = 212
 ;; Probe: C temp = 100
 
+;; 3.33
+;; To produce a "divide" we
+;; can either reduce or create a new
+;; function that allows for division by
+;; simply swapping the order of elements
+
+;; Reducing to just add/mult
+;; (a + b) / 2 = c
+;; 2 c = a + b 
+
+;; Creating a "divider" using multiply
+;; a / b = c
+;; a = b * c
+(define (divider a b c)
+  (multiplier b c a))
+(define a (make-connector))
+(define b (make-connector))
+(define c (make-connector))
+(divider a b c)
+(constant 10 a)
+(constant 2 b)
+(get-value c)
+;; => 5
+
+
+;; (a + b) / 2 = c
+(define (averager a b c)
+  (let ((to-count (make-connector))
+        (add-out (make-connector)))
+    (constant 2 to-count)
+    (adder a b add-out)
+    (divider add-out to-count c)
+    'ok))
+
+(begin 
+  (define a (make-connector))
+  (define b (make-connector))
+  (define c (make-connector))
+  (probe "A" a)
+  (probe "B" b)
+  (probe "C" c)
+  (averager a b c))
+(set-value! a 5 'a)
+(set-value! b 10 'b)
+;; Probe: C = 15/2
+;; Probe: B = 10
+
+
+;; re-running "setup"
+(set-value! c 10 'c)
+(set-value! b 5 'b)
+;; Probe: A = 15
+;; Probe: B = 5
+
+
+
 
