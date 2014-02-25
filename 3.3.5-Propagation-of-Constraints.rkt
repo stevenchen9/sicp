@@ -256,6 +256,50 @@
 ;; Probe: A = 15
 ;; Probe: B = 5
 
+;; 3.34
+;; This is not possible because a cannot set itself, it would
+;; loop forever, and because if a and b are set: then a
+;; is set too...
+(define (squarer a b)
+  (multiplier a a b))
+
+;; 3.35
+(define (squarer a b)
+  (define (process-new-value)
+    (if (has-value? b)
+        (if (< (get-value b) 0)
+            (error "square less than 0 -- SQUARER" (get-value b))
+            (set-value! a (sqrt (get-value b)) me))
+        (if (has-value? a)
+            (set-value! b (* (get-value a) (get-value a)) me)
+            'ok)))
+  (define (process-forget-value)
+    (forget-value! a me)
+    (forget-value! b me)
+    (process-new-value))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value)
+           (process-new-value))
+          ((eq? request 'I-lost-my-value)
+           (process-forget-value))
+          (else
+           (error "Unknown request -- ADDER" request))))
+  (connect a me)
+  (connect b me)
+  me)
+
+(begin 
+  (define a (make-connector))
+  (define b (make-connector))
+  (probe "A" a)
+  (probe "B" b)
+  (squarer a b))
+(set-value! a 5 'a)
+;; Probe: B = 25
+;; Probe: A = 5
+(set-value! b 25 'a)
+;; Probe: A = 5
+;; Probe: B = 25
 
 
 
