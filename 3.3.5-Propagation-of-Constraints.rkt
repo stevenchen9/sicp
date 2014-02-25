@@ -302,4 +302,60 @@
 ;; Probe: B = 25
 
 
+;; 3.37
+;; desired api for a more natural syntax
 
+(define (c+ x y)
+  (let ((z (make-connector)))
+    (adder x y z)
+    z))
+
+(define (c* x y)
+  (let ((z (make-connector)))
+    (multiplier x y z)
+    z))
+(define (c/ x y)
+  (let ((z (make-connector)))
+    (divider x y z)
+    z))
+;; x - y = z
+;; x = y + z
+(define (c- x y)
+  (let ((z (make-connector)))
+    (adder z y x)
+    z))
+(define (cv x)
+  (let ((z (make-connector)))
+    (constant x z)
+    z))
+
+(define (celsuis-fahrenheit-converter x)
+  (c+ (c* (c/ (cv 9) (cv 5))
+          x)
+      (cv 32)))
+(begin (define C (make-connector))
+       (define F (celsuis-fahrenheit-converter C))
+       (probe "F" F)
+       (probe "C" C))
+(set-value! F 77 'u)
+;; Probe: F = 77
+;; Probe: C = 25
+
+(set-value! C 100 'u)
+;; Probe: C = 100
+;; Probe: F = 212
+
+(define (averager x y)
+  (c/ (c+ x y) (cv 2)))
+
+(begin 
+  (define a (make-connector))
+  (define b (make-connector))
+  (define c (averager a b))
+  (probe "A" a)
+  (probe "B" b)
+  (probe "C" c))
+(set-value! a 5 'a)
+(set-value! b 10 'b)
+;; Probe: B = 10
+;; Probe: C = 15/2
