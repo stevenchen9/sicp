@@ -329,9 +329,9 @@
     (constant x z)
     z))
 
-(define (celsuis-fahrenheit-converter x)
+(define (celsuis-fahrenheit-converter C)
   (c+ (c* (c/ (cv 9) (cv 5))
-          x)
+          C)
       (cv 32)))
 (begin (define C (make-connector))
        (define F (celsuis-fahrenheit-converter C))
