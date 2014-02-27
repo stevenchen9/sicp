@@ -42,4 +42,32 @@
 ;; a12->b123 = 10*10 = 100 * 100 * 100 = 1000000
 ;; b123->a12 = 10*10*10 = 1000 * 1000  = 1000000
 
+;; 3.41
+(define (make-account balance)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (let ((protected (make-serializer)))
+    (define (dispatch m)
+      (cond ((eq? m 'withdraw) (protected withdraw))
+            ((eq? m 'deposit) (protected deposit))
+            ((eq? m 'balance) ((protected (lambda () balance))))
+            (else (error "Unknown request -- MAKE-ACCOUNT"
+                         m))))
+    dispatch))
+
+
+;; This new make-account can prevent interleavening such as:
+(define a (make-account 50))
+(parallel-execute (lambda () ((a 'withdraw) 50))
+                  (lambda () ((a 'withdraw) 50)))
+;; Which could result in both checks to (>= balance amount)
+;; happening at the same time, before the (set!) occurs
+
+;; 3.42
 
