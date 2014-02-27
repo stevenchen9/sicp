@@ -93,3 +93,52 @@
 ;; This is a safe change to make, even the balance will never
 ;; be in an "intermediate" state, it is either before or after,
 ;; no invalid between
+
+
+;; Demontration of when a simple serializer breaks down,
+;; i.e. the withdraw then deposit between two accounts
+(define (exchange account1 account2)
+  (let ((difference (- (account1 'balance)
+                       (account2 'balance))))
+    ((account1 'withdraw) difference)
+    ((account2 'deposit) difference)))
+
+;; This works for two accounts, a1 and a2, but breaks down when
+;; there are three, i.e. a1->a2 and a1->a3 concurrently
+
+
+;; One way to solve this is to get a reference to the
+;; serializer used in the account function
+
+(define (make-account balance)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (let ((balance-serializer (make-serializer)))
+    (define (dispatch m)
+      (cond ((eq? m 'withdraw) protected-withdraw)
+            ((eq? m 'deposit) protected-deposit)
+            ((eq? m 'balance) balance)
+            ((eq? m 'serializer) balance-serializer)
+            (else (error "Unknown request -- MAKE-ACCOUNT"
+                         m))))
+    dispatch))
+
+;; To use this we must now correctly use the serializer to
+;; combine to get our desired behavior
+(define (deposit account amount)
+  (let ((s (account 'serializer))
+        (d (account 'deposit)))
+    ((s d) amount)))
+
+(define (serialized-exchange account1 account2)
+  (let ((serializer1 (account1 'serializer))
+        (serializer2 (account2 'serializer)))
+    ((serializer1 (serializer2 exchange))
+     account1
+     account2)))
