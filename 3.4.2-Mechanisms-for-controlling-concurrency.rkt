@@ -155,3 +155,34 @@
 ;; unless there is a concern over the machine failing
 ;; partway through the transaction, and then the money would
 ;; be lost.
+
+;; 3.45
+;; Is this a better way to mix the account serializing
+;; but also get access to the serializer for combinations?
+(define (make-account-and-serializer balance)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (let ((balance-serializer (make-serializer)))
+    (define (dispatch m)
+      (cond ((eq? m 'withdraw) (balance-serializer protected-withdraw))
+            ((eq? m 'deposit) (balance-serializer protected-deposit))
+            ((eq? m 'balance) balance)
+            ((eq? m 'serializer) balance-serializer)
+            (else (error "Unknown request -- MAKE-ACCOUNT"
+                         m))))
+    dispatch))
+
+;; No, now the serialized-exchange will be trying to serialize
+;; the same function twice, or rather "grouping" them, which
+;; should result in an infinite loop as the lock of the outer
+;; is never released to let the inner start. To do this, a more
+;; sophisticated "inner" and "outer" serializer would be needed.
+
+
+
