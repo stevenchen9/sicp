@@ -211,3 +211,25 @@
       true
       (begin (set-car! cell true)
              false)))
+
+;; 3.47 Semaphores
+;; a: Make a semaphore of size N using mutexes
+
+(define (make-semaphore n)
+  (let ((count 0))
+    (define (the-semaphore m)
+      (cond ((eq? m 'acquire)
+             ;; true if already set, false once set
+             (if (test-and-inc! count n) 
+                 (the-semaphore 'acquire) ;; retry, causing "blocking"
+                 'acquired)) 
+            ((eq? m 'release) (dec! count))))
+    the-semaphore))
+(define (dec! n)
+  (set! n (- n 1)))
+(define (test-and-inc! count n)
+  (if (= count n)
+      true ;; need to block
+      (begin (set! count (+ count 1))
+             false)))
+
