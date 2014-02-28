@@ -142,3 +142,16 @@
     ((serializer1 (serializer2 exchange))
      account1
      account2)))
+
+;; 3.44
+;; Does this need a sophisticated method for transacting,
+;; like with exchange?
+(define (transfer from-account to-account amount)
+  ((from-account 'withdraw) amount)
+  ((to-account 'deposit) amount))
+
+;; A transfer does not need anything special, since it is
+;; acceptable to have a point when the money is "nowhere",
+;; unless there is a concern over the machine failing
+;; partway through the transaction, and then the money would
+;; be lost.
