@@ -233,3 +233,49 @@
       (begin (set! count (+ count 1))
              false)))
 
+
+;; A deadlock occurs when two things are blocked trying to access
+;; the resources locked by the other, causing an infinite loop
+
+;; 3.48 - Rewrite serialized-exchange to use unique ids to prevent
+;; deadlocks by always allowing the lower to go if deadlock happens
+(define account-maker
+  (let ((count 0))
+    (lambda (balance) 
+      (set! count (+ count 1))
+      (define (withdraw amount)
+        (if (>= balance amount)
+            (begin (set! balance (- balance amount))
+                   balance)
+            "Insufficient funds"))
+      (define (deposit amount)
+        (set! balance (+ balance amount))
+        balance)
+      (let ((balance-serializer (make-serializer)))
+        (define (dispatch m)
+          (cond ((eq? m 'withdraw) protected-withdraw)
+                ((eq? m 'deposit) protected-deposit)
+                ((eq? m 'balance) balance)
+                ((eq? m 'id) count)
+                ((eq? m 'serializer) balance-serializer)
+                (else (error "Unknown request -- MAKE-ACCOUNT"
+                             m))))
+        dispatch))))
+
+(define ac1 (account-maker 50))
+(ac1 'id)
+;; => 1
+(define ac2 (account-maker 40))
+(ac2 'id)
+;; => 2
+
+(define (serialized-exchange account1 account2)
+  (let ((serializer1 (account1 'serializer))
+        (serializer2 (account2 'serializer)))
+    (if (< (account1 'id) (account2 'id))
+        ((serializer2 (serializer1 exchange))
+         account2
+         account1)
+        ((serializer1 (serializer2 exchange))
+         account1
+         account2))))
