@@ -279,3 +279,11 @@
         ((serializer1 (serializer2 exchange))
          account1
          account2))))
+
+;; 3.49 - When does the solution in 3.48 fail?
+;; If you want to have a fail-over withdraw, where upon
+;; checking the balance of accout1, and finding it not
+;; large enough, you withdraw from accountN until the
+;; desired amount is withdrawn.
+
+
