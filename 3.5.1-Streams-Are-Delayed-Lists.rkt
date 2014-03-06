@@ -58,7 +58,7 @@
 
 (stream-car
  (stream-cdr
-  (stream-filter prime?
+  (stream-filter even?
                  (stream-enumerate-interval 10000 1000000))))
 
 (define (stream-enumerate-interval low high)
@@ -76,6 +76,10 @@
 ;; The cdr of the list hasn't been evaluated yet, it is a
 ;; promise to evaluate the "rest" of the intervals later
 
+;; stream-filter will lazily one at a time
+;; leaving the cdr as the unevaluated recursive call.
+;; If it doesn't find any sutable match for pred,
+;; it will traverse the whole list searching for one
 (define (stream-filter pred stream)
   (cond ((stream-null? stream) the-empty-stream)
         ((pred (stream-car stream))
@@ -83,3 +87,31 @@
                (delay (stream-filter pred
                                      (stream-cdr stream)))))
         (else (stream-filter pred (stream-cdr stream)))))
+
+(define (stream-null? s)
+  (null? s))
+
+;; Delay and force as simple concepts
+
+(delay <EXP>)
+;; could be rewritten
+(lambda () <EXP>)
+;; and force...
+(define (force s) (s))
+
+;; But this can cause many times the same forcing to happen on the
+;; same object, which is inefficient
+
+(define (memo-proc proc)
+  (let ((already-run? false) (result false))
+    (lambda ()
+      (if (not already-run?)
+          (begin (set! result (proc))
+                 (set! already-run? true)
+                 result)
+          result))))
+
+;; delay must be defined such that these are equivalent
+(delay <EXP>)
+(memo-proc (lambda () <EXP>))
+;; and `force` can stay the same
