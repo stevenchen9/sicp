@@ -128,4 +128,14 @@
 (display-stream (stream-map + (stream-enumerate-interval 1 10) (stream-enumerate-interval 1 10)))
 ;; =>  2 4 6 8 10 12 14 16 18 20
 
+;; 3.51
+(define (show x)
+  (display-line x)
+  x)
+(define x (stream-map show (stream-enumerate-interval 0 10)))
+(stream-ref x 5)
+;; => 1 2 3 4 5
+(stream-ref x 7)
+;; => 6 7
 
+;; 3.52
