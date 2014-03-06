@@ -115,3 +115,17 @@
 (delay <EXP>)
 (memo-proc (lambda () <EXP>))
 ;; and `force` can stay the same
+(define the-empty-stream '())
+;; 3.50 - Generalized stream-map
+(define (stream-map proc . argstreams)
+  (if (stream-null? (car argstreams))
+      the-empty-stream
+      (cons
+        (apply proc (map stream-car argstreams))
+        (delay (apply stream-map
+                      (cons proc (map stream-cdr argstreams)))))))
+
+(display-stream (stream-map + (stream-enumerate-interval 1 10) (stream-enumerate-interval 1 10)))
+;; =>  2 4 6 8 10 12 14 16 18 20
+
+
