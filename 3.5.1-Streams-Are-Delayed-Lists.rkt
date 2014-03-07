@@ -158,3 +158,38 @@
 ;; => sum = 210
 ;; => done 10 15 45 55 105 120 190 210
 
+
+;; This is an infinite stream of integers
+(define (integers-starting-from n)
+  (cons n (delay (integers-starting-from (+ n 1)))))
+(define integers (integers-starting-from 1))
+
+(define (divisible? x y) (= (remainder x y) 0))
+
+(define no-sevens
+  (stream-filter (lambda (x) (not (divisible? x 7)))
+                 integers))
+
+(stream-ref no-sevens 100)
+;; => 117
+
+(define (fibgen a b)
+  (cons a (delay (fibgen b (+ a b)))))
+
+(define fibs (fibgen 0 1))
+
+;; this makes an infinite stream of primes, because
+;; each prime has to be not divisible by all previous
+;; numbers
+(define (sieve stream)
+  (cons
+   (stream-car stream)
+   (delay
+     (sieve (stream-filter
+             (lambda (x)
+               (not (divisible? x (stream-car stream))))
+             (stream-cdr stream))))))
+(define primes (sieve (integers-starting-from 2)))
+
+(stream-ref primes 50)
+;; => 233
