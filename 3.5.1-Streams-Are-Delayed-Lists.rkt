@@ -193,3 +193,51 @@
 
 (stream-ref primes 50)
 ;; => 233
+
+
+;; An infinite stream of 1's
+(define ones (cons 1 (delay ones)))
+
+(define (add-streams s1 s2)
+  (stream-map + s1 s2))
+
+;; keep adding the first elements of integers and ones
+;; making a stream of all numbers
+(define integers (cons 1 (delay (add-streams ones integers))))
+(stream-ref integers 10)
+;; => 11
+
+(define fibs
+  (cons 0
+        (delay
+          (cons 1
+                (delay (add-stream (stream-cdr fibs)
+                                   fibs))))))
+
+
+
+(define (scale-stream stream factor)
+  (stream-map (lambda (x) (* x factor)) stream))
+
+(define double (cons 1 (delay (scale-stream double 2))))
+(stream-ref double 10)
+;; => 1024
+
+
+;; A recursive definition that relies on the primes stream
+;; to check if a number is prime? which is needed to filter
+;; for the primes stream which needs the prime? function to
+;; have access to itself to.... HUUUUURRRRRKK
+(define (prime? n)
+  (define (iter ps)
+    (cond ((> (square (stream-car ps)) n) true)
+          ((divisible? n (stream-car ps)) false)
+          (else (iter (stream-cdr ps)))))
+  (iter primes))
+(define primes
+  (cons
+   2
+   (delay (stream-filter prime? (integers-starting-from 3)))))
+
+
+
