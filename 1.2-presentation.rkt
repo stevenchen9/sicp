@@ -1,7 +1,6 @@
 ;; This section is about consequences
 
 
-;; First, consequences of memory
 
 ;; Linear Recursion and Iteration
     ;; Linear Recursive PROCESS
@@ -111,4 +110,44 @@
 
 ;; Orders of Growth
 
+   ;; Theta is the "middle" bound of growth, both for space and steps
+
+   ;; Big-O (omicron)       - Upper bound
+   ;; Big-Θ (theta)         - "Between" bound
+   ;; Big-Ω (omega)         - Lower bound
+
+   ;; Big-O is often used in CS as a "proxy" for Big-Theta
+
+
+   ;; The linearly recursive factorial is:
+   ;; Θ(n) - steps
+   ;; Θ(n) - space
+
+   ;; Linearly iterative factorial is:
+   ;; Θ(n) - steps
+   ;; Θ(1) - space
+
+   ;; Tree-recursive Fibonacci is: 
+   ;; Θ(golden-ratio ^ n) - steps
+   ;; Θ(n) - space
+
+
+   ;; Why do they start you on orders of growth as the second thing
+   ;; right after syntax?
+   
+
 ;; Examples: Exponentiation, GCD, Primality, 
+
+
+
+;; Favorite Part of the minor section?
+
+;; Any "ah ha!" moments?
+
+;; Worst part?
+
+;; Hardest?
+
+;; Is studying orders of growth valuable still today? 
+
+
