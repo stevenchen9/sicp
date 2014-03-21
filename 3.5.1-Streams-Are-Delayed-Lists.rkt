@@ -242,12 +242,17 @@
    (delay (stream-filter prime? (integers-starting-from 3)))))
 
 
-;; 3.53 - Describe this:
+;; *Exercise 3.53:* Without running the program, describe the
+;; elements of the stream defined by
 (define s (cons 1 (delay (add-streams s s))))
 
 ;; This generates a stream that has the powers of two: 2, 4, 8, 16 
 
-;; 3.54 - mul-streams
+;; *Exercise 3.54:* Define a procedure `mul-streams', analogous to
+;; `add-streams', that produces the elementwise product of its two
+;; input streams.  Use this together with the stream of `integers' to
+;; complete the following definition of the stream whose nth element
+;; (counting from 0) is n + 1 factorial:
 
 (define (mul-streams s1 s2)
   (stream-map * s1 s2))
@@ -271,3 +276,19 @@
 ;; => 24
 
 
+;; *Exercise 3.55:* Define a procedure `partial-sums' that takes as
+;; argument a stream S and returns the stream whose elements are S_0,
+;; S_0 + S_1, S_0 + S_1 + S_2, ....  For example, `(partial-sums
+;; integers)' should be the stream 1, 3, 6, 10, 15, ....
+
+(define (partial-sums s)
+  (define f
+    (cons 0
+        (delay (add-streams s f))))
+  f)
+
+(define t (partial-sums integers))
+(stream-ref t 4)
+;; => 10
+(stream-ref t 5)
+;; => 15
