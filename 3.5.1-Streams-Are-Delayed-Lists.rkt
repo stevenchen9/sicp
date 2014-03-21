@@ -26,6 +26,7 @@
   (if (= n 0)
       (stream-car s)
       (stream-ref (stream-cdr s) (- n 1))))
+
 (define (stream-map proc s)
   (if (stream-null? s)
       the-empty-stream
@@ -234,10 +235,39 @@
           ((divisible? n (stream-car ps)) false)
           (else (iter (stream-cdr ps)))))
   (iter primes))
+
 (define primes
   (cons
    2
    (delay (stream-filter prime? (integers-starting-from 3)))))
 
+
+;; 3.53 - Describe this:
+(define s (cons 1 (delay (add-streams s s))))
+
+;; This generates a stream that has the powers of two: 2, 4, 8, 16 
+
+;; 3.54 - mul-streams
+
+(define (mul-streams s1 s2)
+  (stream-map * s1 s2))
+
+(define (add-streams s1 s2)
+  (stream-map + s1 s2))
+(define ones (cons 1 (delay ones)))
+(define integers (cons 1 (delay (add-streams ones integers))))
+
+;; This list of factorials works by mulitplying each number n
+;; by the equivalent number of factorials, so when n = 3
+;; we are mulitiplying that by factorial(2) = 2 so the result
+;; is 6
+(define factorials
+  (cons 1
+        (delay (mul-streams integers factorials))))
+
+(stream-ref factorials 2)
+;; => 2
+(stream-ref factorials 4)
+;; => 24
 
 
