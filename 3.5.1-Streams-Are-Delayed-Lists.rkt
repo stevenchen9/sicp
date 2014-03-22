@@ -313,25 +313,9 @@
   
 ;;    * These are all the elements of `S'.
   
-  
 ;; Now all we have to do is combine elements from these sources.  For
 ;; this we define a procedure `merge' that combines two ordered
 ;; streams into one ordered result stream, eliminating repetitions:
-  
-;;      (define (merge s1 s2)
-;;        (cond ((stream-null? s1) s2)
-;;              ((stream-null? s2) s1)
-;;              (else
-;;               (let ((s1car (stream-car s1))
-;;                     (s2car (stream-car s2)))
-;;                 (cond ((< s1car s2car)
-;;                        (cons-stream s1car (merge (stream-cdr s1) s2)))
-;;                       ((> s1car s2car)
-;;                        (cons-stream s2car (merge s1 (stream-cdr s2))))
-;;                       (else
-;;                        (cons-stream s1car
-;;                                     (merge (stream-cdr s1)
-;;                                            (stream-cdr s2)))))))))
   
 ;; Then the required stream may be constructed with `merge', as
 ;; follows:
@@ -356,8 +340,19 @@
 
 ;; (require (planet neil/sicp:1:17))
 
+(define (take S n)
+  (define (take-i s counter ret)
+    (if (= n counter)
+        (reverse ret)
+        (take-i (stream-cdr s)
+                (+ 1 counter)
+                (cons (stream-car s) ret))))
+  (take-i S 0 '()))
+
 (load "3.5.1-Support.rkt")
 (define S (cons 1 (delay (merge (merge (scale-stream S 2) (scale-stream S 3))
                                 (scale-stream S 5)))))
-(stream-ref S 4)
-;; => 5
+(take S 10)
+;; => {1 2 3 4 5 6 8 9 10 12}
+
+
