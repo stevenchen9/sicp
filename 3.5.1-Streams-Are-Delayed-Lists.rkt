@@ -386,3 +386,53 @@
 
 (take pi-stream 5)
 ;; (0 4.0 2.666666666666667 3.466666666666667 2.8952380952380956)
+
+
+;; Here we take the less approximate pi-stream and create a new stream
+;; out of the first three numbers in pi-stream. Then it repeats creating
+;; the next value out of the 2nd-4th numbers, etc. In this way, we use several
+;; of the pi-stream numbers to create a new stream of values.
+(define (euler-transform s)
+  (let ((s0 (stream-ref s 0))           ; S_(n-1)
+        (s1 (stream-ref s 1))           ; S_n
+        (s2 (stream-ref s 2)))          ; S_(n+1)
+    (cons (- s2 (/ (square (- s2 s1))
+                   (+ s0 (* -2 s1) s2)))
+          (delay (euler-transform (stream-cdr s))))))
+
+(take (euler-transform pi-stream) 5)
+;; => (3.0 3.166666666666667 3.1333333333333337 3.1452380952380956 3.13968253968254) 
+
+
+;; We can accelerate our euler stream transformer...
+(define (make-tableau transform s)
+  (cons s
+        (delay (make-tableau transform
+                             (transform s)))))
+
+(define (accelerated-sequence transform s)
+  (stream-map stream-car
+              (make-tableau transform s)))
+
+(take (accelerated-sequence euler-transform pi-stream) 5)
+;; => (0 3.0 3.1388888888888893 3.1415610507386664 3.141592402966356)
+
+
+;;   *Exercise 3.63:* Louis Reasoner asks why the `sqrt-stream'
+;;   procedure was not written in the following more straightforward
+;;   way, without the local variable `guesses':
+
+;;        (define (sqrt-stream x)
+;;          (cons-stream 1.0
+;;                       (stream-map (lambda (guess)
+;;                                     (sqrt-improve guess x))
+;;                                   (sqrt-stream x))))
+
+;;   Alyssa P. Hacker replies that this version of the procedure is
+;;   considerably less efficient because it performs redundant
+;;   computation.  Explain Alyssa's answer.  Would the two versions
+;;   still differ in efficiency if our implementation of `delay' used
+;;   only `(lambda () <EXP>)' without using the optimization provided
+;;   by `memo-proc' (section *Note 3-5-1::)?
+
+

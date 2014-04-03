@@ -93,3 +93,5 @@
                 (+ 1 counter)
                 (cons (stream-car s) ret))))
   (take-i S 0 '()))
+
+(define (square x) (* x x))
