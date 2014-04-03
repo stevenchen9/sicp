@@ -356,3 +356,33 @@
 ;; => {1 2 3 4 5 6 8 9 10 12}
 
 
+;; 3.5.3 - Exploiting streams
+
+(load "3.5.1-Support.rkt")
+(define (average x y)
+  (/ (+ x y) 2))
+
+(define (sqrt-improve guess x)
+  (average guess (/ x guess)))
+
+(define (sqrt-stream x)
+  (define guesses
+    (cons 1.0
+          (delay (stream-map (lambda (guess)
+                               (sqrt-improve guess x))
+                             guesses))))
+  guesses)
+
+;; (display-stream (sqrt-stream 2))
+;; =>   (1.  1.5   1.4166666666666665  1.4142156862745097 1.4142135623746899 ...)
+
+
+(define (pi-summands n)
+  (cons (/ 1.0 n)
+        (delay (stream-map - (pi-summands (+ n 2))))))
+
+(define pi-stream
+  (scale-stream (partial-sums (pi-summands 1)) 4))
+
+(take pi-stream 5)
+;; (0 4.0 2.666666666666667 3.466666666666667 2.8952380952380956)

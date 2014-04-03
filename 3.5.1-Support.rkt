@@ -1,4 +1,6 @@
 
+(define the-empty-stream '())
+
 (define (stream-ref s n)
   (if (= n 0)
       (stream-car s)
@@ -75,3 +77,19 @@
 
 (define (add-streams s1 s2)
   (stream-map + s1 s2))
+
+
+(define (partial-sums s)
+  (define f
+    (cons 0
+        (delay (add-streams s f))))
+  f)
+
+(define (take S n)
+  (define (take-i s counter ret)
+    (if (= n counter)
+        (reverse ret)
+        (take-i (stream-cdr s)
+                (+ 1 counter)
+                (cons (stream-car s) ret))))
+  (take-i S 0 '()))
