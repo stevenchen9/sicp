@@ -435,4 +435,28 @@
 ;;   only `(lambda () <EXP>)' without using the optimization provided
 ;;   by `memo-proc' (section *Note 3-5-1::)?
 
+;; The recursive call to (sqrt-stream x) will cause a large slowdown,
+;; unless using memo-proc
+
+
+
+;;   *Exercise 3.64:* Write a procedure `stream-limit' that takes as
+;;   arguments a stream and a number (the tolerance).  It should
+;;   examine the stream until it finds two successive elements that
+;;   differ in absolute value by less than the tolerance, and return
+;;   the second of the two elements.  Using this, we could compute
+;;   square roots up to a given tolerance by
+
+(define (stream-limit s tol)
+  (let ((s0 (stream-ref s 0))
+        (s1 (stream-ref s 1)))
+    (if (> tol (abs (- s0 s1)))
+        s1
+        (stream-limit (stream-cdr s) tol))))
+
+(define (sqrt x tolerance)
+  (stream-limit (sqrt-stream x) tolerance))
+
+(sqrt 40 12)
+
 
