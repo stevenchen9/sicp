@@ -459,4 +459,44 @@
 
 (sqrt 40 12)
 
+(define (interleave s1 s2)
+  (if (stream-null? s1)
+      s2
+      (cons (stream-car s1)
+            (delay (interleave s2 (stream-cdr s1))))))
+
+(define (pairs s t)
+  (cons
+   (list (stream-car s) (stream-car t))
+   (delay (interleave
+           (stream-map (lambda (x) (list (stream-car s) x))
+                       (stream-cdr t))
+           (pairs (stream-cdr s) (stream-cdr t))))))
+
+
+(take (pairs integers integers) 10)
+;; => ((1 1) (1 2) (2 2) (1 3) (2 3) (1 4) (3 3) (1 5) (2 4) (1 6))
+
+
+
+;; *Exercise 3.67:* Modify the `pairs' procedure so that `(pairs
+;; integers integers)' will produce the stream of _all_ pairs of
+;; integers (i,j) (without the condition i <= j).  Hint: You will
+;; need to mix in an additional stream.
+
+(define (all-pairs s t)
+  (cons
+   (list (stream-car s) (stream-car t))
+   (delay (interleave
+           (stream-map (lambda (x)
+                         (list (stream-car s) x))
+                       (stream-cdr t))
+           (interleave (stream-map (lambda (x)
+                                     (list x (stream-car t)))
+                                   (stream-cdr s))
+                       (pairs (stream-cdr s) (stream-cdr t)))))))
+
+(take (all-pairs integers integers) 20)
+;; => ((1 1) (1 2) (2 1) (1 3) (2 2) (1 4) (3 1) (1 5) (2 3) (1 6) (4 1) (1 7) (3 3) (1 8) (5 1) (1 9) (2 4) (1 10) (6 1) (1 11))
+
 
