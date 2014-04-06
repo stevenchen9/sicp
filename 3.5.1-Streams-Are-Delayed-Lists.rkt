@@ -500,3 +500,41 @@
 ;; => ((1 1) (1 2) (2 1) (1 3) (2 2) (1 4) (3 1) (1 5) (2 3) (1 6) (4 1) (1 7) (3 3) (1 8) (5 1) (1 9) (2 4) (1 10) (6 1) (1 11))
 
 
+
+;; *Exercise 3.68:* Louis Reasoner thinks that building a stream of
+;; pairs from three parts is unnecessarily complicated.  Instead of
+;; separating the pair (S_0,T_0) from the rest of the pairs in the
+;; first row, he proposes to work with the whole first row, as
+;; follows:
+  
+;;      (define (pairs s t)
+;;        (interleave
+;;         (stream-map (lambda (x) (list (stream-car s) x))
+;;                     t)
+;;         (pairs (stream-cdr s) (stream-cdr t))))
+  
+;; Does this work?  Consider what happens if we evaluate `(pairs
+;; integers integers)' using Louis's definition of `pairs'.
+
+;; It will never end, because the second argument to (interleave) is
+;; entirely evaluated, which causes an infinite loop.
+
+
+;; *Exercise 3.69:* Write a procedure `triples' that takes three
+;; infinite streams, S, T, and U, and produces the stream of triples
+;; (S_i,T_j,U_k) such that i <= j <= k.  Use `triples' to generate
+;; the stream of all Pythagorean triples of positive integers, i.e.,
+;; the triples (i,j,k) such that i <= j and i^2 + j^2 = k^2.
+(define (triples s t v)
+  (cons
+   (list (stream-car s) (stream-car t) (stream-car v))
+   (delay (interleave
+           (stream-map (lambda (x y) (list (stream-car s) x y))
+                       (stream-cdr t)
+                       (stream-cdr v))
+           (triples (stream-cdr s) (stream-cdr t) (stream-cdr v))))))
+
+
+(take (triples integers integers integers) 10)
+;; => ((1 1 1) (1 2 2) (2 2 2) (1 3 3) (2 3 3) (1 4 4) (3 3 3) (1 5 5) (2 4 4) (1 6 6))
+
