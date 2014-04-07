@@ -538,3 +538,25 @@
 (take (triples integers integers integers) 10)
 ;; => ((1 1 1) (1 2 2) (2 2 2) (1 3 3) (2 3 3) (1 4 4) (3 3 3) (1 5 5) (2 4 4) (1 6 6))
 
+;; An integral procedure using streams and steps 
+(define (integral integrand initial-value dt)
+  (define int
+    (cons initial-value
+          (delay  (add-streams (scale-stream integrand dt)
+                               int))))
+  int)
+
+
+(define (integral delayed-integrand initial-value dt)
+  (define int
+    (cons initial-value
+                 (delay (let ((integrand (force delayed-integrand)))
+                          (add-streams (scale-stream integrand dt)
+                                       int)))))
+  int)
+
+
+(define (solve f y0 dt)
+  (define y (integral (delay dy) y0 dt))
+  (define dy (stream-map f y))
+  y)
