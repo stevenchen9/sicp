@@ -60,3 +60,33 @@
 (define (application? exp) (tagged-list? exp 'call))
 (define (operator exp) (cadr exp))
 (define (operands exp) (cddr exp))
+
+
+;;   *Exercise 4.3:* Rewrite `eval' so that the dispatch is done in
+;;   data-directed style.  Compare this with the data-directed
+;;   differentiation procedure of *Note Exercise 2-73::.  (You may use
+;;   the `car' of a compound expression as the type of the expression,
+;;   as is appropriate for the syntax implemented in this section.)
+
+;; (define (add-proc sym proc) (...))
+;; (define (get-proc sym) (...))
+;; (define (is-proc sym) (...))
+(add-proc 'lambda (lambda (exp env)
+                    (make-procedure (lambda-parameters exp)
+                                    (lambda-body exp)
+                                    env)))
+(add-proc 'define (lambda (exp env) (eval-definition exp env)))
+(add-proc 'if (lambda (exp env) (eval-if exp env)))
+(add-proc 'begin (lambda (exp env) (eval-sequence (begin-actions exp) env)))
+(add-proc 'cond (lambda (exp env) (eval (cond->if exp) env)))
+(add-proc 'set! (lambda (exp env) (eval-assignment exp env)))
+(add-proc 'quote (lambda (exp env) (text-of-quotation exp)))
+(add-proc 'call (lambda (exp env) (apply (eval (operator exp) env)
+                                         (list-of-values (operands exp) env))))
+
+(define (eval exp env)
+  (cond ((self-evaluating? exp) exp)
+        ((variable? exp) (lookup-variable-value exp env))
+        ((is-proc (car exp)) ((get-proc (car exp)) exp env))
+        (else
+         (error "Unknown expression type -- EVAL" exp))))
