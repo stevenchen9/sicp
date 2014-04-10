@@ -134,3 +134,63 @@
               e
               (inner (cdr exps))))))
   (inner exp))
+
+
+;; DO THIS FOR SICP CLASS
+;;   *Exercise 4.5:* Scheme allows an additional syntax for `cond'
+;;   clauses, `(<TEST> => <RECIPIENT>)'.  If <TEST> evaluates to a true
+;;   value, then <RECIPIENT> is evaluated.  Its value must be a
+;;   procedure of one argument; this procedure is then invoked on the
+;;   value of the <TEST>, and the result is returned as the value of
+;;   the `cond' expression.  For example
+
+;;        (cond ((assoc 'b '((a 1) (b 2))) => cadr)
+;;              (else false))
+
+;;   returns 2.  Modify the handling of `cond' so that it supports this
+;;   extended syntax.
+ 
+;; Cond
+(define (cond? exp) (tagged-list? exp 'cond))
+(define (cond-clauses exp) (cdr exp))
+(define (cond-else-clause? clause)
+  (eq? (cond-predicate clause) 'else))
+
+(define (cond-predicate clause) (car clause))
+(define (cond-actions clause) (cdr clause))
+
+;; We choose to make cond a derived expression of nested if statements
+(define (cond->if exp)
+  (expand-clauses (cond-clauses exp)))
+
+(define (cond-alt? clause)
+  (eq? (cadr clause) '=>))
+
+(define (cond-predicate clause) (car clause))
+(define (cond-alt-func clause) (cadr clause))
+
+(define (expand-clauses clauses)
+  (if (null? clauses)
+      'false                          ; no `else' clause
+      (let ((first (car clauses))
+            (rest (cdr clauses)))
+        (if (cond-else-clause? first)
+            (if (null? rest)
+                (sequence->exp (cond-actions first))
+                (error "ELSE clause isn't last -- COND->IF"
+                       clauses))
+            (if (cond-alt? first)
+                (make-let 'a (cond-predicate first)
+                          (make-alt-if 'a
+                                       ((cond-alt-func first) 'a)
+                                       (expand-clauses rest)))
+                (make-if (cond-predicate first)
+                         (sequence->exp (cond-actions first))
+                         (expand-clauses rest)))))))
+
+(define (make-if predicate consequent alternative)
+  (list 'if predicate consequent alternative))
+(define (make-let binding value body)
+  (list 'let (list (list binding value)) body))
+;; (make-let 'a 5 '(+ a b))
+
