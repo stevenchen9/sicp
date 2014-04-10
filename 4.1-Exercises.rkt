@@ -90,3 +90,47 @@
         ((is-proc (car exp)) ((get-proc (car exp)) exp env))
         (else
          (error "Unknown expression type -- EVAL" exp))))
+
+
+;; *Exercise 4.4:* Recall the definitions of the special forms `and'
+;; and `or' from *Note Chapter 1:::
+  
+;;    * `and': The expressions are evaluated from left to right.  If
+;;      any expression evaluates to false, false is returned; any
+;;      remaining expressions are not evaluated.  If all the
+;;      expressions evaluate to true values, the value of the last
+;;      expression is returned.  If there are no expressions then
+;;      true is returned.
+  
+;;    * `or': The expressions are evaluated from left to right.  If
+;;      any expression evaluates to a true value, that value is
+;;      returned; any remaining expressions are not evaluated.  If
+;;      all expressions evaluate to false, or if there are no
+;;      expressions, then false is returned.
+  
+  
+;; Install `and' and `or' as new special forms for the evaluator by
+;; defining appropriate syntax procedures and evaluation procedures
+;; `eval-and' and `eval-or'.  Alternatively, show how to implement
+;; `and' and `or' as derived expressions.
+
+(define (and? exp) (tagged-list? exp 'and))
+(define (eval-and exp env)
+  (define (inner exps)
+    (if (empty? exps)
+        #t
+        (if (eval (car exps) env)
+            (inner (cdr exps))
+            #f)))
+  (inner exp))
+
+(define (or? exp) (tagged-list? exp 'or))
+(define (eval-or exp env)
+  (define (inner exps)
+    (if (empty? exps)
+        #f
+        (let ((e (eval (car exps) env)))
+          (if e
+              e
+              (inner (cdr exps))))))
+  (inner exp))
