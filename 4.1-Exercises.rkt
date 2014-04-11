@@ -260,3 +260,53 @@
 (let*->combination '(let ((x 1) (y 2)) (+ x y)))
 ;; => ((lambda (x) ((lambda (y) (+ x y)) . 2)) . 1)
 
+
+;;   *Exercise 4.8:* "Named `let'" is a variant of `let' that has the
+;;   form
+
+;;        (let <VAR> <BINDINGS> <BODY>)
+
+;;   The <BINDINGS> and <BODY> are just as in ordinary `let', except
+;;   that <VAR> is bound within <BODY> to a procedure whose body is
+;;   <BODY> and whose parameters are the variables in the <BINDINGS>.
+;;   Thus, one can repeatedly execute the <BODY> by invoking the
+;;   procedure named <VAR>.  For example, the iterative Fibonacci
+;;   procedure (section *Note 1-2-2::) can be rewritten using named
+;;   `let' as follows:
+
+;;        (define (fib n)
+;;          (let fib-iter ((a 1)
+;;                         (b 0)
+;;                         (count n))
+;;            (if (= count 0)
+;;                b
+;;                (fib-iter (+ a b) a (- count 1)))))
+
+;;   Modify `let->combination' of *Note Exercise 4-6:: to also support
+;;   named `let'.
+(define (let? exp) (tagged-list? exp 'let))
+
+(define (named-let? exp) (and (not (pair? (cadr exp)))
+                              (tagged-list? exp 'let)))
+(define (named-let-var exp) (cadr exp))
+(define (named-let-bindings exp) (caddr exp))
+(define (named-let-body exp) (cdddr exp))
+
+(define (bindings exp) (cadr exp))
+(define (body exp) (cddr exp))
+(define (let->combination exp)
+  (if (named-let? exp)
+      (sequence->exp (list
+                      (list 'define (cons (named-let-var exp)
+                                          (map car (named-let-bindings exp)))
+                            (sequence->exp (named-let-body exp)))
+                      (cons (named-let-var exp)
+                            (map cadr (named-let-bindings exp)))))
+      (cons (list 'lambda
+                  (map car (bindings exp))
+                  (sequence->exp (body exp)))
+            (map cadr (bindings exp)))))
+(let->combination '(let test ((x 1) (y 2)) (+ x y) (print "test")))
+;; => (begin (define (test x y) (begin (+ x y) (print "test"))) (test 1 2))
+(let->combination '(let ((x 1) (y 2)) (+ x y) (print "test")))
+
