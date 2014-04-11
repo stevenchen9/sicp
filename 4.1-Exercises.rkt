@@ -194,3 +194,30 @@
   (list 'let (list (list binding value)) body))
 ;; (make-let 'a 5 '(+ a b))
 
+
+;;   *Exercise 4.6:* `Let' expressions are derived expressions, because
+
+;;        (let ((<VAR_1> <EXP_1>) ... (<VAR_N> <EXP_N>))
+;;          <BODY>)
+
+;;   is equivalent to
+
+;;        ((lambda (<VAR_1> ... <VAR_N>)
+;;           <BODY>)
+;;         <EXP_1>
+;;         ...
+;;         <EXP_N>)
+
+;;   Implement a syntactic transformation `let->combination' that
+;;   reduces evaluating `let' expressions to evaluating combinations of
+;;   the type shown above, and add the appropriate clause to `eval' to
+;;   handle `let' expressions.
+
+(define (let? exp) (tagged-list? exp 'let))
+(define (bindings exp) (cadr exp))
+(define (body exp) (cddr exp))
+(define (let->combination exp)
+  (cons (list 'lambda (map car (bindings exp)) (body exp))
+        (map cadr (bindings exp))))
+(let->combination '(let ((x 1) (y 2)) (+ x y)))
+;; => ((lambda (x y) ((+ x y))) 1 2)

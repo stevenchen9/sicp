@@ -1,3 +1,4 @@
+(load "4.1-MetacircularEvaluator.rkt")
 ;; The "language specific" representation of the MC interfaces
 (define (self-evaluating? exp)
   (cond ((number? exp) true)
@@ -102,3 +103,4 @@
             (make-if (cond-predicate first)
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
+
