@@ -23,6 +23,12 @@
 
 
 
+
+
+
+
+
+
 ;; Lambdas
 (lambda (x)
   (/ 1.0 (* x (+ x 2))))
@@ -33,9 +39,15 @@
 
 ;; Define (define (<procedure> <args..>) <body>)
 ;; is just "syntatic sugar" for:
-(define adder
-  (lambda (x)
-    (+ x x)))
+(define adder (lambda (x)
+                (+ x x)))
+
+
+
+
+
+
+
 
 
 
@@ -84,11 +96,29 @@
 
 
 
+
+
+
+(let ((x 4))
+  (+ 3 x))
+
+
+
+
 (+
  (let ((x 3)) (+ x (* x 10))) ;; x = 3
  x) ;; x = 5
 
 ;; The x is shadowed inside the let, but then "unshadowed" outside
+
+
+
+
+
+
+
+
+
 
 
 ;; Returned lambdas
@@ -99,6 +129,23 @@
 
 ((average-damp square) 10)
 ;; => 55
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
