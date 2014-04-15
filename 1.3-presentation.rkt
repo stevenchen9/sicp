@@ -53,9 +53,6 @@
 
 
 
-
-
-
 ;; Convert an inner procedure 
 (define (f x y)
   (define (f-helper a b)
@@ -140,11 +137,59 @@
 
 
 
+(((lambda (x)
+    (lambda (x)
+      x))
+  50)
+ 25)
+;; => 25
 
 
 
 
 
+
+
+
+
+(((lambda () +)) 50 50)
+;; => 100 
+
+
+
+
+
+(let ((x 50))
+  (let ((x 25))
+    x))
+;; => 25
+
+
+
+
+
+(let ((x 50))
+  (let ((x x))
+    x))
+;; => 50 
+
+
+((lambda (x)
+     ((lambda (x) x) x))
+ 50)
+;; => 50 
+
+
+(define inner (lambda (x) x))
+(define outer (lambda (x) (inner x)))
+(outer 50)
+;; => 50 
+
+
+(define (inner x) x)
+(define (outer x) (inner x))
+(outer 50)
+;; => 50 
 
 
 
