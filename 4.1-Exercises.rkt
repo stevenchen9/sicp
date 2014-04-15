@@ -325,14 +325,15 @@
 (define (pred exp) (cadr exp))
 (define (body exp) (caddr exp))
 (define (while->comb exp)
-  (cons (list 'define (list 'iter-name '())
-              (list 'if
-                    (pred exp)
-                    (list 'begin
-                          (body exp)
-                          (list 'iter-name))))
-        (list (list 'iter-name))))
+  (list 'begin (list 'define (list 'iter-name)
+                     (list 'if
+                           (pred exp)
+                           (list 'begin
+                                 (body exp)
+                                 (list 'iter-name))
+                           'done))
+        (list 'iter-name)))
 (while->comb '(while (true) (body)))
-;; => ((define (iter-name ()) (if (true) (begin (body) (iter-name)))) (iter-name))
+;; => (begin (define (iter-name) (if (true) (begin (body) (iter-name)) done)) (iter-name))
 
 
