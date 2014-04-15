@@ -310,3 +310,29 @@
 ;; => (begin (define (test x y) (begin (+ x y) (print "test"))) (test 1 2))
 (let->combination '(let ((x 1) (y 2)) (+ x y) (print "test")))
 
+
+;;   *Exercise 4.9:* Many languages support a variety of iteration
+;;   constructs, such as `do', `for', `while', and `until'.  In Scheme,
+;;   iterative processes can be expressed in terms of ordinary
+;;   procedure calls, so special iteration constructs provide no
+;;   essential gain in computational power.  On the other hand, such
+;;   constructs are often convenient.  Design some iteration
+;;   constructs, give examples of their use, and show how to implement
+;;   them as derived expressions.
+
+;; Made a "while" that matches (while <pred> <body>)
+(define (while? exp) (tagged-list? exp 'while))
+(define (pred exp) (cadr exp))
+(define (body exp) (caddr exp))
+(define (while->comb exp)
+  (cons (list 'define (list 'iter-name '())
+              (list 'if
+                    (pred exp)
+                    (list 'begin
+                          (body exp)
+                          (list 'iter-name))))
+        (list (list 'iter-name))))
+(while->comb '(while (true) (body)))
+;; => ((define (iter-name ()) (if (true) (begin (body) (iter-name)))) (iter-name))
+
+
