@@ -404,9 +404,9 @@
           (scan (frame-variables frame)
                 (frame-values frame)))))
   (env-loop env))
-(lookup-variable-value 'a t)
+(define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
+(lookup-variable-value 'a an-env)
 ;; => 1
-
 
 (define (set-variable-value! var val env)
   (define (env-loop env)
@@ -422,6 +422,9 @@
           (scan (frame-variables frame)
                 (frame-values frame)))))
   (env-loop env))
+;; in progress
+;;(define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
+;; (set-variable-value! 'a 2 an-env)
 
 (define (define-variable! var val env)
   (let ((frame (first-frame env)))
