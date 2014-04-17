@@ -356,26 +356,29 @@
 (define (first-frame env) (car env))
 (define the-empty-environment '())
 
-;; Frame => (<vars> <values>)
+;; Frame => ((<var> <value>)...)
 (define (make-frame variables values)
   (map (lambda (var val) (cons var val)) variables values))
-;;(define t (make-frame '(a b c) '(1 2 3)))
+(define t (make-frame '(a b c) '(1 2 3)))
 
 (define (frame-variables frame)
   (map car frame))
-;;(frame-variables t)
+(frame-variables t)
+;; => {a b c}
 
 (define (frame-values frame)
   (map cdr frame))
-;; (frame-values t)
+(frame-values t)
+;; => {1 2 3}
 
 
 ;; (require scheme/mpair)
 (require (planet neil/sicp:1:17))
 
 (define (add-binding-to-frame! var val frame)
-  (set-car! frame (cons var (car frame)))
-  (set-cdr! frame (cons val (cdr frame))))
+  (cons (cons var val) frame))
+(add-binding-to-frame! 'x 4 t)
+;; => {{x . 4} {a . 1} {b . 2} {c . 3}}
 
 (define (extend-environment vars vals base-env)
   (if (= (length vars) (length vals))
@@ -383,6 +386,9 @@
       (if (< (length vars) (length vals))
           (error "Too many arguments supplied" vars vals)
           (error "Too few arguments supplied" vars vals))))
+(extend-environment '(a b c) '(1 2 3) the-empty-environment)
+;; => {{{a . 1} {b . 2} {c . 3}}}
+
 
 (define (lookup-variable-value var env)
   (define (env-loop env)
@@ -398,6 +404,8 @@
           (scan (frame-variables frame)
                 (frame-values frame)))))
   (env-loop env))
+(lookup-variable-value 'a t)
+;; => 1
 
 
 (define (set-variable-value! var val env)
