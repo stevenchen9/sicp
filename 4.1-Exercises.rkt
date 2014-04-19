@@ -437,3 +437,60 @@
 (define an-env (extend-environment '(a) '(1) the-empty-environment))
 (define-variable! 'b 'blah an-env)
 ;; => {{b . blah} {a . 1}}
+
+;;   *Exercise 4.12:* The procedures `set-variable-value!',
+;;   `define-variable!', and `lookup-variable-value' can be expressed
+;;   in terms of more abstract procedures for traversing the
+;;   environment structure.  Define abstractions that capture the
+;;   common patterns and redefine the three procedures in terms of these
+;;   abstractions.
+
+(define (lookup-variable-value var env)
+  (define (env-loop env)
+    (define (scan vars vals)
+      (cond [(null? vars)
+             (env-loop (enclosing-environment env))]
+            [(eq? var (car vars))
+             (car vals)]
+            [else (scan (cdr vars) (cdr vals))]))
+    (if (eq? env the-empty-environment)
+        (error "Unbound variable" var)
+        (let [(frame (first-frame env))]
+          (scan (frame-variables frame)
+                (frame-values frame)))))
+  (env-loop env))
+(lookup-variable-value 'x '(((y 3))))
+
+(define (set-variable-value! var val env)
+  (define (env-loop env)
+    (if (eq? env the-empty-environment)
+        (error "Unbound variable -- SET!" var)
+        (let [(frame (first-frame env))]
+          (let [(res (locate-in-frame var
+                                      (frame-variables frame)
+                                      (frame-values frame)
+                                      (lambda (vals) (set-car! vals val))))]
+            (if res res
+                (env-loop (enclosing-environment env)))))))
+  (env-loop env))
+(define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
+(set-variable-value! 'a 'blah an-env)
+
+(define (locate-in-frame var vars vals do-found)
+  (define (scan vars vals)
+      (cond [(null? vars) null]
+            [(eq? var (car vars)) (do-found vals)]
+            [else (scan (cdr vars) (cdr vals))]))
+  (scan vars vals))
+
+(define (define-variable! var val env)
+  (let ((frame (first-frame env)))
+    (define (scan vars vals)
+      (cond [(null? vars)
+             (add-binding-to-frame! var val frame)]
+            [(eq? var (car vars))
+             (set-car! vals val)]
+            [else (scan (cdr vars) (cdr vals))]))
+    (scan (frame-variables frame)
+          (frame-values frame))))
+
