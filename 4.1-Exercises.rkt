@@ -469,17 +469,18 @@
           (let [(res (locate-in-frame var
                                       (frame-variables frame)
                                       (frame-values frame)
-                                      (lambda (vals) (set-car! vals val))))]
-            (if res res
+                                      ))]
+            (if res
+                (set-car! res val)
                 (env-loop (enclosing-environment env)))))))
   (env-loop env))
 (define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
-(set-variable-value! 'a 'blah an-env)
+(set-variable-value! 'a 'SET! an-env)
 
-(define (locate-in-frame var vars vals do-found)
+(define (locate-in-frame var vars vals)
   (define (scan vars vals)
       (cond [(null? vars) null]
-            [(eq? var (car vars)) (do-found vals)]
+            [(eq? var (car vars)) vals]
             [else (scan (cdr vars) (cdr vals))]))
   (scan vars vals))
 
