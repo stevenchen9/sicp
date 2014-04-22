@@ -445,53 +445,46 @@
 ;;   common patterns and redefine the three procedures in terms of these
 ;;   abstractions.
 
-(define (lookup-variable-value var env)
+(require (planet neil/sicp:1:17))
+(load "4.1-Scheme-Impl.rkt")
+
+(define (find-do var env doto)
   (define (env-loop env)
     (define (scan vars vals)
-      (cond [(null? vars)
-             (env-loop (enclosing-environment env))]
-            [(eq? var (car vars))
-             (car vals)]
-            [else (scan (cdr vars) (cdr vals))]))
+      (cond ((null? vars)
+             (env-loop (enclosing-environment env)))
+            ((eq? var (car vars))
+             (doto vals))
+            (else (scan (cdr vars) (cdr vals)))))
     (if (eq? env the-empty-environment)
         (error "Unbound variable" var)
-        (let [(frame (first-frame env))]
+        (let ((frame (first-frame env)))
           (scan (frame-variables frame)
                 (frame-values frame)))))
   (env-loop env))
-(lookup-variable-value 'x '(((y 3))))
+
+(define (lookup-variable-value var env)
+  (find-do var env (lambda (found) (car found))))
+
+(define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
+(lookup-variable-value 'b an-env)
 
 (define (set-variable-value! var val env)
-  (define (env-loop env)
-    (if (eq? env the-empty-environment)
-        (error "Unbound variable -- SET!" var)
-        (let [(frame (first-frame env))]
-          (let [(res (locate-in-frame var
-                                      (frame-variables frame)
-                                      (frame-values frame)
-                                      ))]
-            (if res
-                (set-car! res val)
-                (env-loop (enclosing-environment env)))))))
-  (env-loop env))
+  (find-do var env (lambda (found) (set-car! found val))))
+
 (define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
 (set-variable-value! 'a 'SET! an-env)
-
-(define (locate-in-frame var vars vals)
-  (define (scan vars vals)
-      (cond [(null? vars) null]
-            [(eq? var (car vars)) vals]
-            [else (scan (cdr vars) (cdr vals))]))
-  (scan vars vals))
 
 (define (define-variable! var val env)
   (let ((frame (first-frame env)))
     (define (scan vars vals)
-      (cond [(null? vars)
-             (add-binding-to-frame! var val frame)]
-            [(eq? var (car vars))
-             (set-car! vals val)]
-            [else (scan (cdr vars) (cdr vals))]))
+      (cond ((null? vars)
+             (add-binding-to-frame! var val frame))
+            ((eq? var (car vars))
+             (set-car! vals val))
+            (else (scan (cdr vars) (cdr vals)))))
     (scan (frame-variables frame)
           (frame-values frame))))
 
+(define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
+(define-variable! 'x 'SET! an-env)

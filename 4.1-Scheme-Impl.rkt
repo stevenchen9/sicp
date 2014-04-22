@@ -1,3 +1,5 @@
+;; (require scheme/mpair)
+(require (planet neil/sicp:1:17))
 (load "4.1-MetacircularEvaluator.rkt")
 ;; The "language specific" representation of the MC interfaces
 (define (self-evaluating? exp)
@@ -129,8 +131,6 @@
 (define (frame-values frame) (cdr frame))
 
 
-;; (require scheme/mpair)
-(require (planet neil/sicp:1:17))
 
 (define (add-binding-to-frame! var val frame)
   (set-car! frame (cons var (car frame)))
