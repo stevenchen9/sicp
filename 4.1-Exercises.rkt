@@ -488,3 +488,38 @@
 
 (define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
 (define-variable! 'x 'SET! an-env)
+
+;;   *Exercise 4.13:* Scheme allows us to create new bindings for
+;;   variables by means of `define', but provides no way to get rid of
+;;   bindings.  Implement for the evaluator a special form
+;;   `make-unbound!' that removes the binding of a given symbol from the
+;;   environment in which the `make-unbound!' expression is evaluated.
+;;   This problem is not completely specified.  For example, should we
+;;   remove only the binding in the first frame of the environment?
+;;   Complete the specification and justify any choices you make.
+
+;; I will unbind it only inside the current frame, otherwise we would
+;; treat assignment as local, but deassignment as global, which would
+;; have very confusing repurcussions.
+
+(define (make-unbound! var env)
+  (let ((frame (first-frame env)))
+    (define (scan vars vals)
+      (cond ((null? vars) #t)
+            ((eq? var (car vars))
+             (begin (set-car! vals null)
+                    (set-car! vars null)))
+            (else (scan (cdr vars) (cdr vals)))))
+    (scan (frame-variables frame)
+          (frame-values frame))))
+
+(define an-env (extend-environment '(a b c) '(1 2 3) the-empty-environment))
+(make-unbound! 'c an-env)
+(lookup-variable-value 'a an-env)
+;; => 1
+(lookup-variable-value 'c an-env)
+;; => Unbound variable c
+
+;; I have it replacing the removed binding with null, as a shortcut,
+;; but this could be replaced with a true remove for space concerns
+;; if needed.
