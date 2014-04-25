@@ -554,3 +554,41 @@
 ;; but this would still not help anything tail-recursive, which would
 ;; simply run out of memory.
 
+
+
+;;   *Exercise 4.16:* In this exercise we implement the method just
+;;   described for interpreting internal definitions.  We assume that
+;;   the evaluator supports `let' (see *Note Exercise 4-6::).
+
+;;     a. Change `lookup-variable-value' (section *Note 4-1-3::) to
+;;        signal an error if the value it finds is the symbol
+;;        `*unassigned*'.
+
+;;     b. Write a procedure `scan-out-defines' that takes a procedure
+;;        body and returns an equivalent one that has no internal
+;;        definitions, by making the transformation described above.
+
+;;     c. Install `scan-out-defines' in the interpreter, either in
+;;        `make-procedure' or in `procedure-body' (see section *Note
+;;        4-1-3::).  Which place is better?  Why?
+
+
+(define (lookup-variable-value var env)
+  (define (env-loop env)
+    (define (scan vars vals)
+      (cond [(null? vars)
+             (env-loop (enclosing-environment env))]
+            [(eq? var (car vars))
+             (if (eq? '*unassigned* (car vals))
+                 (error "Symbol used before it was defined:" var)
+                 (car vals))]
+            [else (scan (cdr vars) (cdr vals))]))
+    (if (eq? env the-empty-environment)
+        (error "Unbound variable" var)
+        (let [(frame (first-frame env))]
+          (scan (frame-variables frame)
+                (frame-values frame)))))
+  (env-loop env))
+(define an-env (extend-environment '(a b c) '(*unassigned* 2 3) the-empty-environment))
+(lookup-variable-value 'a an-env)
+
