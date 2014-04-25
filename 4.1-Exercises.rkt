@@ -592,3 +592,28 @@
 (define an-env (extend-environment '(a b c) '(*unassigned* 2 3) the-empty-environment))
 (lookup-variable-value 'a an-env)
 
+(load "testing.rkt")
+
+(define (scan-out-defined body)
+  (let [(defs '())
+        (define-bodies '())]
+    (map (lambda (exp)
+           (set! define-bodies (cons (caddr exp) define-bodies))
+           (set! defs (cons (cadr exp) defs)))
+         (filter (lambda (exp) (tagged-list? exp 'define))
+                 body))
+    (set! define-bodies (reverse define-bodies))
+    (set! defs (reverse defs))
+    (list 'let
+          (map (lambda (def) (list def '*unassigned*)) defs)
+          (sequence->exp
+           (filter (lambda (exp) (not (tagged-list? exp 'define))) body)))))
+
+(scan-out-defined '((define a (a-body))
+                     (define b (b-body))
+                     (+ 1 2)
+                     (+ a b)))
+;; => {let {{a *unassigned*} {b *unassigned*}} {begin {+ 1 2} {+ a b}}}
+
+
+
