@@ -594,6 +594,9 @@
 
 (load "testing.rkt")
 
+(define (make-set name body)
+  (list 'set! name body))
+
 (define (scan-out-defined body)
   (let [(defs '())
         (define-bodies '())]
@@ -607,13 +610,13 @@
     (list 'let
           (map (lambda (def) (list def '*unassigned*)) defs)
           (sequence->exp
-           (filter (lambda (exp) (not (tagged-list? exp 'define))) body)))))
+           (append
+            (map make-set defs define-bodies)
+            (filter (lambda (exp) (not (tagged-list? exp 'define))) body))))))
 
 (scan-out-defined '((define a (a-body))
                      (define b (b-body))
                      (+ 1 2)
                      (+ a b)))
-;; => {let {{a *unassigned*} {b *unassigned*}} {begin {+ 1 2} {+ a b}}}
-
-
+;; => {let {{a *unassigned*} {b *unassigned*}} {begin {set! a {a-body}} {set! b {b-body}} {+ 1 2} {+ a b}}}
 
