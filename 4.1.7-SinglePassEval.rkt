@@ -1,3 +1,6 @@
+(load "4.1-MetacircularEvaluator.rkt")
+(load "4.1-Scheme-Impl.rkt")
+
 (define (eval exp env)
   ((analyze exp) env))
 
@@ -8,6 +11,7 @@
         ((variable? exp) (analyze-variable exp))
         ((assignment? exp) (analyze-assignment exp))
         ((definition? exp) (analyze-definition exp))
+        ((let? exp) (analyze-let exp))
         ((if? exp) (analyze-if exp))
         ((lambda? exp) (analyze-lambda exp))
         ((begin? exp) (analyze-sequence (begin-actions exp)))
@@ -20,14 +24,12 @@
 (define (analyze-self-evaluating exp)
   (lambda (env) exp))
 
-
 (define (analyze-quoted exp)
   (let ((qval (text-of-quotation exp)))
     (lambda (env) qval)))
 
 (define (analyze-variable exp)
   (lambda (env) (lookup-variable-value exp env)))
-
 
 (define (analyze-assignment exp)
   (let ((var (assignment-variable exp))
@@ -42,6 +44,7 @@
     (lambda (env)
       (define-variable! var (vproc env) env)
       'ok)))
+
 (define (analyze-if exp)
   (let ((pproc (analyze (if-predicate exp)))
         (cproc (analyze (if-consequent exp)))
@@ -51,11 +54,24 @@
           (cproc env)
           (aproc env)))))
 
+(define (bindings exp) (cadr exp))
+(define (body exp) (cddr exp))
+
+(define (analyze-let exp)
+  (cons (list 'lambda (map car (bindings exp)) (body exp))
+        (map cadr (bindings exp))))
+(let->combination '(let ((x 1) (y 2)) (+ x y)))
+;; => ((lambda (x y) ((+ x y))) 1 2)
+(define (analyze-let exp)
+  (let ((vars (lambda-parameters exp))
+        (bproc (analyze-sequence (lambda-body exp))))
+    (lambda (env) (make-procedure vars bproc env))))
 
 (define (analyze-lambda exp)
   (let ((vars (lambda-parameters exp))
         (bproc (analyze-sequence (lambda-body exp))))
     (lambda (env) (make-procedure vars bproc env))))
+
 (define (analyze-sequence exps)
   (define (sequentially proc1 proc2)
     (lambda (env) (proc1 env) (proc2 env)))

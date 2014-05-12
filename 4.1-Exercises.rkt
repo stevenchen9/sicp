@@ -648,3 +648,9 @@
 ;; In this exercise, one might accidentally use a symbol otherwise in
 ;; use by the program. Now E3 has a new definition for a and b, causing
 ;; errors.
+
+(load "4.1.7-SinglePassEval.rkt")
+
+;;   *Exercise 4.22:* Extend the evaluator in this section to support
+;;   the special form `let'.  (See *Note Exercise 4-6::.)
+
