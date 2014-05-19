@@ -71,3 +71,35 @@
 ;; The define will not have been evaluated yet, so until we try to
 ;; lookup the value of w, the counter will not have been incremented.
 
+
+;;   *Exercise 4.28:* `Eval' uses `actual-value' rather than `eval' to
+;;   evaluate the operator before passing it to `apply', in order to
+;;   force the value of the operator.  Give an example that
+;;   demonstrates the need for this forcing.
+
+;; (define (g x) (+ x 1))
+;; (define (f g x) (g x))
+
+;; (f g 10)
+
+;;   *Exercise 4.29:* Exhibit a program that you would expect to run
+;;   much more slowly without memoization than with memoization.  Also,
+;;   consider the following interaction, where the `id' procedure is
+;;   defined as in *Note Exercise 4-27:: and `count' starts at 0:
+
+;;        (define (square x)
+;;          (* x x))
+
+;;        ;;; L-Eval input:
+;;        (square (id 10))
+;;        ;;; L-Eval value:
+;;        100
+
+;;        ;;; L-Eval input:
+;;        count
+;;        ;;; L-Eval value:
+;;        (if memoizing? 1 2)
+
+;;   Give the responses both when the evaluator memoizes and when it
+;;   does not.
+
