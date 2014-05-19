@@ -37,3 +37,37 @@
       (left)))
 
 (unless1 true (lambda () 1) (lambda () 2))
+
+
+;;   *Exercise 4.27:* Suppose we type in the following definitions to
+;;   the lazy evaluator:
+
+;;        (define count 0)
+
+;;        (define (id x)
+;;          (set! count (+ count 1))
+;;          x)
+
+;;   Give the missing values in the following sequence of interactions,
+;;   and explain your answers.(5)
+
+;;        (define w (id (id 10)))
+
+;;        ;;; L-Eval input:
+;;        count
+;;        ;;; L-Eval value:
+;;        0
+
+;;        ;;; L-Eval input:
+;;        w
+;;        ;;; L-Eval value:
+;;        10
+
+;;        ;;; L-Eval input:
+;;        count
+;;        ;;; L-Eval value:
+;;        2
+
+;; The define will not have been evaluated yet, so until we try to
+;; lookup the value of w, the counter will not have been incremented.
+
