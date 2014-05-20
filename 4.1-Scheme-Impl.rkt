@@ -2,8 +2,9 @@
 
 ;; (require scheme/mpair)
 
-(require (planet neil/sicp:1:17))
+;; (require (planet neil/sicp:1:17))
 (load "4.1-MetacircularEvaluator.rkt")
+(load "4.2-LazyEval.rkt")
 
 ;; The "language specific" representation of the MC interfaces
 (define (self-evaluating? exp)
@@ -200,7 +201,10 @@
         (list 'cdr cdr)
         (list 'cons cons)
         (list 'null? null?)
-        ;;<MORE PRIMITIVES>
+        (list '* *)
+        (list 'append append)
+        (list '= =)
+        (list '+ +)
         ))
 
 (define (primitive-procedure-names)
@@ -251,3 +255,15 @@
                      '<procedure-env>))
       (display object)))
 
+
+(define input-promptl ";;; L-Eval input:")
+(define output-promptl ";;; L-Eval value:")
+
+(define (driver-loopl)
+  (prompt-for-input input-promptl)
+  (let ((input (read)))
+    (let ((output
+           (actual-value input the-global-environment)))
+      (announce-output output-promptl)
+      (user-print output)))
+  (driver-loopl))
