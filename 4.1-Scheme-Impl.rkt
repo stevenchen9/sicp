@@ -1,6 +1,10 @@
+(define apply-in-underlying-scheme apply)
+
 ;; (require scheme/mpair)
+
 (require (planet neil/sicp:1:17))
 (load "4.1-MetacircularEvaluator.rkt")
+
 ;; The "language specific" representation of the MC interfaces
 (define (self-evaluating? exp)
   (cond ((number? exp) true)
