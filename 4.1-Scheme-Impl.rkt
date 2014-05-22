@@ -136,6 +136,21 @@
 (define (frame-values frame) (cdr frame))
 
 
+(define (print-env env)
+  (define (frame-print env)
+    (if (pair? env)
+        (begin (display "\nFrame\n")
+               (single-print (car env))
+               (frame-print (cdr env)))
+        '()))
+  (define (single-print frame)
+    (if (pair? frame)
+        (begin (display (caar frame))
+               (display "   ")
+               (display (cadr frame))
+               (single-print (cons (cdar frame)
+                                   (cddr frame))))))
+  (frame-print env)) 
 
 (define (add-binding-to-frame! var val frame)
   (set-car! frame (cons var (car frame)))
