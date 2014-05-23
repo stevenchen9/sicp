@@ -135,7 +135,6 @@
 (define (frame-variables frame) (car frame))
 (define (frame-values frame) (cdr frame))
 
-
 (define (print-env env)
   (define (frame-print env)
     (if (pair? env)
@@ -144,10 +143,13 @@
                (frame-print (cdr env)))
         '()))
   (define (single-print frame)
-    (if (pair? frame)
+    (if (and (pair? frame)
+             (pair? (car frame))
+             (pair? (cdr frame)))
         (begin (display (caar frame))
                (display "   ")
                (display (cadr frame))
+               (display "\n")
                (single-print (cons (cdar frame)
                                    (cddr frame))))))
   (frame-print env)) 

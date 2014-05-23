@@ -27,6 +27,7 @@
   'ok)
 
 (define (eval exp env)
+  (print-env env)
   (cond ((self-evaluating? exp) exp)
         ((variable? exp) (lookup-variable-value exp env))
         ((quoted? exp) (text-of-quotation exp))

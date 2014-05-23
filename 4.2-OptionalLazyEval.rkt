@@ -27,11 +27,9 @@
   'ok)
 
 (define (eval exp env)
-  (display "\nEval Call\n")
   (display exp)
-  (display "\n")
-  (display env)
-  (display "\n")
+  (newline)
+  (print-env env)
   (cond ((self-evaluating? exp) exp)
         ((variable? exp) (lookup-variable-value exp env))
         ((quoted? exp) (text-of-quotation exp))
