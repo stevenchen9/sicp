@@ -27,6 +27,11 @@
   'ok)
 
 (define (eval exp env)
+  (display "\nEval Call\n")
+  (display exp)
+  (display "\n")
+  (display env)
+  (display "\n")
   (cond ((self-evaluating? exp) exp)
         ((variable? exp) (lookup-variable-value exp env))
         ((quoted? exp) (text-of-quotation exp))
@@ -60,7 +65,8 @@
           (procedure-body procedure)
           (extend-environment
            (procedure-parameters procedure)
-           (list-of-args-sometimes-lazy arguments env) 
+           (list-of-args-sometimes-lazy (procedure-parameters-with-lazy procedure)
+                                        arguments env) 
            (procedure-environment procedure))))
         (else
          (error
@@ -73,16 +79,18 @@
             (list-of-arg-values (rest-operands exps)
                                 env))))
 
-(define (list-of-args-sometimes-lazy exps env)
-  (let [(first-arg (first-operand exps))])
+(define (list-of-args-sometimes-lazy procedure-args exps env)
   (if (no-operands? exps)
       '()
-      (cons
-       (cond [(lazy-arg? first-arg) (delay-it (lazy-arg-operator first-arg) env)]
-             [(memo-arg? first-arg) (memo-it (lazy-arg-operator first-arg) env)]
-             [else (actual-value first-arg env)])
-       (list-of-delayed-args (rest-operands exps)
-                             env))))
+      (let [(first-arg (first-operand exps))
+            (first-param (first-operand procedure-args))]
+        (cons
+         (cond ((lazy-arg? first-param) (delay-it first-arg env))
+               ((memo-arg? first-param) (delay-it first-arg env))
+               (else (actual-value first-arg env)))
+         (list-of-args-sometimes-lazy (rest-operands procedure-args)
+                                      (rest-operands exps)
+                                      env)))))
 
 (define (evaluated-thunk? obj)
   (tagged-list? obj 'evaluated-thunk))
@@ -103,6 +111,12 @@
         (else obj)))
 
 (define (delay-it exp env)
+  (display "\nDelaying:")
+  (display exp)
+  (display "\n")
+  (list 'thunk exp env))
+
+(define (memo-it exp env)
   (list 'thunk exp env))
 
 (define (thunk? obj)

@@ -125,7 +125,16 @@
 (define (compound-procedure? p)
   (tagged-list? p 'procedure))
 
-(define (procedure-parameters p) (cadr p))
+(define (procedure-parameters p)
+  (define (strip-lazy params)
+    (if (pair? params)
+        (cons (cond [(pair? (car params)) (caar params)]
+                    [else (car params)])
+              (strip-lazy (cdr params)))
+        '()))
+  (strip-lazy (cadr p)))
+
+(define (procedure-parameters-with-lazy p) (cadr p))
 (define (procedure-body p) (caddr p))
 (define (procedure-environment p) (cadddr p))
 
