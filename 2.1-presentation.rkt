@@ -1,9 +1,63 @@
-;; Let's say we wanted to make a data structure.
+;; Using low-level concrete forms to make higher level abstractions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (define (make-rat n d) (cons n d))
 
 (define (numer x) (car x))
 (define (denom x) (cdr x))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (define (add-rat x y)
   (make-rat (+ (* (numer x) (denom y))
@@ -37,13 +91,98 @@
 (print-rat one-half)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;; this is the most important part to wrap your head around
 
 (define (cons x y)
   (lambda (m) (m x y)))
+
 (define (car z)
   (z (lambda (p q) p)))
 (define (cdr z)
   (z (lambda (p q) q)))
+
 (car (cons 1 2))
 (cdr (cons 1 2))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;; Church numerals
+(define zero (lambda (f) (lambda (x) x)))
+(define (add-1 n)
+  (lambda (f) (lambda (x) (f ((n f) x)))))
+
+(define (inc n)
+  (+ n 1))
+
+((zero inc) 0) ;; 0
+((zero inc) 1) ;; 1
+(add-1 zero) 
+
+;; substitution for 1 
+(define (add-1 zero)
+  (lambda (f) (lambda (x) (f ((zero f) x)))))
+
+(define (add-1 (lambda (f) (lambda (x) x)))
+  (lambda (f) (lambda (x) (f (((lambda (f) (lambda (x) x)) f) x)))))
+
+(define (add-1 zero)
+  (lambda (f) (lambda (x) (f x))))
+
+;; and that's one!
+(define one 
+  (lambda (f) (lambda (x) (f x))))
+
+;; now for two!
+(define (add-1 one)
+  (lambda (f) (lambda (x) (f ((one f) x)))))
+
+(define (add-1 (lambda (f1) (lambda (x1) (f1 x1))))
+  (lambda (f) (lambda (x) (f (f x)))))
+
+(define two 
+  (lambda (f) (lambda (x) (f (f x)))))
+
+((two inc) 1) ;; 3!
+((one inc) 1) ;; 2!
+
+
+
