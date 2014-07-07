@@ -21,6 +21,26 @@
 (define (an-integer-starting-from n)
   (amb n (an-integer-starting-from (+ n 1))))
 
+;; 4.36
 (define (an-integer-between n m)
   (amb n (when (<= n m) (an-integer-between (+ n 1) m))))
 
+(define (a-pythagorean-triple-between low high)
+  (let ((i (an-integer-between low high)))
+    (let ((j (an-integer-between i high)))
+      (let ((k (an-integer-between j high)))
+        (require? (= (+ (* i i) (* j j)) (* k k)))
+        (list i j k)))))
+
+;; 4.37
+;; Ben Bitdiddle's more efficient solution, less results are
+;; required to be enumerated
+(define (a-pythagorean-triple-between low high)
+  (let ((i (an-integer-between low high))
+        (hsq (* high high)))
+    (let ((j (an-integer-between i high)))
+      (let ((ksq (+ (* i i) (* j j))))
+        (require (>= hsq ksq))
+        (let ((k (sqrt ksq)))
+          (require (integer? k))
+          (list i j k))))))
