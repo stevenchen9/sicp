@@ -1,3 +1,13 @@
+
+
+
+
+
+
+
+
+
+
 ;; Using low-level concrete forms to make higher level abstractions
 
 
@@ -42,6 +52,10 @@
 (define (numer x) (car x))
 (define (denom x) (cdr x))
 
+
+(def num {:numer 1, :denom 2})
+(num :numer)
+(:numer num)
 
 
 
@@ -106,15 +120,26 @@
 
 ;; this is the most important part to wrap your head around
 
+
 (define (cons x y)
   (lambda (m) (m x y)))
 
 (define (car z)
-  (z (lambda (p q) p)))
+  (z (lambda (x y) x)))
 (define (cdr z)
-  (z (lambda (p q) q)))
+  (z (lambda (x y) y)))
+
+((cons 1 2) +)
+((lambda (m) (m 1 2)) +)
+(lambda (+) (+ 1 2))
 
 (car (cons 1 2))
+(car (lambda (m) (m 1 2)))
+((lambda (m) (m 1 2)) (lambda (x y) x))
+((lambda (x y) x) 1 2)
+(lambda (1 2) 1) 
+1 
+
 (cdr (cons 1 2))
 
 
@@ -153,9 +178,34 @@
 (define (inc n)
   (+ n 1))
 
-((zero inc) 0) ;; 0
-((zero inc) 1) ;; 1
-(add-1 zero) 
+
+
+((zero +) 0) ;; 0
+
+
+(define zero (lambda (f) (lambda (x) x)))
+(define (add-1 n)
+  (lambda (f) (lambda (x) (f (((lambda (f) (lambda (x) x)) f) x)))))
+
+(lambda (f) (lambda (x) (f ( (lambda (x) x)  x))))
+(lambda (f) (lambda (x) (f x)))
+(define one (lambda (f) (lambda (x) (f x))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ;; substitution for 1 
 (define (add-1 zero)
@@ -181,8 +231,8 @@
 (define two 
   (lambda (f) (lambda (x) (f (f x)))))
 
-((two inc) 1) ;; 3!
-((one inc) 1) ;; 2!
+((two inc) 0) ;; 2
+((one inc) 0) ;; 1
 
 
 
