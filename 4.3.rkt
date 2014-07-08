@@ -105,3 +105,43 @@
                 (list 'fletcher fletcher)
                 (list 'miller miller)
                 (list 'smith smith)))))))
+
+;;   *Exercise 4.41:* Write an ordinary Scheme program to solve the
+;;   multiple dwelling puzzle.
+(define (multiple-dwelling-scheme)
+  (map (lambda (baker)
+         (map (lambda (cooper)
+                (map (lambda (miller)
+                       (when (> miller cooper)
+                         (map (lambda (fletcher)
+                                (map (lambda (smith)
+                                       (when (and (unique? (list smith baker cooper fletcher miller))
+                                                  (not (= (abs (- smith fletcher)) 1))
+                                                  (not (= (abs (- fletcher cooper)) 1)))
+                                         (list (list 'baker baker)
+                                               (list 'cooper cooper)
+                                               (list 'fletcher fletcher)
+                                               (list 'miller miller)
+                                               (list 'smith smith))))
+                                     '(1 2 3 4 5)))
+                              '(2 3 4))))
+                     '(1 2 3 4 5)))
+              '(2 3 4 5)))
+       '(1 2 3 4)))
+
+(multiple-dwelling-scheme)
+;; => (sorta) {{smith 1} {cooper 2} {baker 3} {fletcher 4} {miller 5}} 
+
+;; (unique? '(1 2 3 2)) => #f
+;; (unique? '(1 2 3)) => #t
+(define (unique? l)
+  (define (i-d l r)
+    (if (empty? l)
+        #t
+        (if (member (car l) r)
+            #f
+            (i-d (cdr l) (cons (car l) r)))))
+  (i-d l '()))
+
+
+   
