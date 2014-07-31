@@ -1,4 +1,6 @@
-(require (planet neil/sicp:1:17))
+#lang swindle
+;;(require (planet neil/sicp:1:17))
+
 
 ;; The desired syntax for a nondeterministic langauge 
 
@@ -88,6 +90,7 @@
 (define (the-higher-of a b)
   (if (> a b) a b))
 
+
 (define (multiple-dwelling)
   (let ((baker (amb 1 2 3 4))
         (cooper (amb 2 3 4 5)))
@@ -129,7 +132,16 @@
               '(2 3 4 5)))
        '(1 2 3 4)))
 
-(multiple-dwelling-scheme)
+(define x (multiple-dwelling-scheme))
+(define (deep-filter pred l)
+  (if (list? l)
+      (filter (lambda (x) (if (list? x)
+                              (deep-filter pred x)
+                              (pred x)))
+              l)
+      '()))
+(deep-filter void? x)
+
 ;; => (sorta) {{smith 1} {cooper 2} {baker 3} {fletcher 4} {miller 5}} 
 
 ;; (unique? '(1 2 3 2)) => #f
@@ -144,4 +156,30 @@
   (i-d l '()))
 
 
-   
+(require (planet "sicp.ss" ("soegaard" "sicp.plt" 2 1)))
+
+
+
+;; Parsing sentences
+(define nouns '(noun student professor cat class))
+
+(define verbs '(verb studies lectures eats sleeps))
+
+(define articles '(article the a))
+
+
+(sentence (noun-phrase (article the) (noun cat))
+          (verb eats))
+
+
+(define (parse-sentence)
+  (list 'sentence
+        (parse-noun-phrase)
+        (parse-word verbs)))
+
+(define (parse-word word-list)
+  (require (not (null? *unparsed*)))
+  (require (memq (car *unparsed*) (cdr word-list)))
+  (let ((found-word (car *unparsed*)))
+    (set! *unparsed* (cdr *unparsed*))
+    (list (car word-list) found-word)))
