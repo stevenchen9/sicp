@@ -1,5 +1,8 @@
-;; #lang swindle
-;; Parsing sentences
+#lang scheme
+;arsing sentences
+(require (planet "sicp.ss" ("soegaard" "sicp.plt" 2 1)))
+
+
 (define nouns '(noun student professor cat class))
 
 (define verbs '(verb studies lectures eats sleeps))
@@ -40,11 +43,6 @@
         (parse-word prepositions)
         (parse-noun-phrase)))
 
-
-(define (parse-sentence)
-  (list 'sentence
-        (parse-noun-phrase)
-        (parse-verb-phrase)))
 
 (define (parse-verb-phrase)
   (define (maybe-extend verb-phrase)
