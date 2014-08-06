@@ -35,10 +35,6 @@
      (job ?super ?supertitle)
      (not (job ?super (computer . ?x))))
 
-; (salary ?person ?amount)
-; (address ?person ?where)
-; (supervisor ?person ?super)
-; (job ?person ?title)
 
 ;;   *Exercise 4.57:* Define a rule that says that person 1 can replace
 ;;   person 2 if either person 1 does the same job as person 2 or
@@ -69,3 +65,20 @@
      (is-paid-less ?p1 ?p2)
      (salary ?p1 ?p1Sal)
      (salary ?p2 ?p2Sal))
+
+;;   *Exercise 4.58:* Define a rule that says that a person is a "big
+;;   shot" in a division if the person works in the division but does
+;;   not have a supervisor who works in the division.
+
+; (salary ?person ?amount)
+; (address ?person ?where)
+; (supervisor ?person ?super)
+; (job ?person ?title)
+(rule (division ?p ?div)
+      (job ?p (?div . ?_)))
+
+(rule (big-shot ?p)
+      (and (division ?p ?div)
+           (supervisor ?p1 ?s)
+           (division ?s ?superDiv)
+           (not (same ?superDiv ?div))))
