@@ -1,4 +1,4 @@
-;; Lists are created by chaining cons cells
+;; Lists 
 
 ;;       +---+---+     +---+---+     +---+---+     +---+---+
 ;;  ---->| * | *-+---->| * | *-+---->| * | *-+---->| * | / |
@@ -59,3 +59,47 @@
 (define (scale-list items factor)
   (map (lambda (x) (* x factor))
        items))
+
+;; Trees
+;;                                            (3 4)
+;;                                              |
+;;                                              V
+;;  ((1 2) 3 4)  +---+---+                  +---+---+     +---+---+
+;;          ---->| * | *-+----------------->| * | *-+---->| * | / |
+;;               +-|-+---+                  +-|-+---+     +-|-+---+
+;;                 |                          |             |
+;;                 V                          V             V
+;;        (1 2)  +---+---+     +---+---+    +---+         +---+
+;;          ---->| * | *-+---->| * | / |    | 3 |         | 4 |
+;;               +-|-+---+     +-|-+---+    +---+         +---+
+;;                 |             |
+;;                 V             V
+;;               +---+         +---+
+;;               | 1 |         | 2 |
+;;               +---+         +---+
+
+(define x (cons (list 1 2) (list 3 4)))
+(length x) ;; => 3
+
+(define (count-leaves x)
+  (cond ((null? x) 0)
+        ((not (pair? x)) 1)
+        (else (+ (count-leaves (car x))
+                 (count-leaves (cdr x))))))
+
+
+(define (scale-tree tree factor)
+  (cond ((null? tree) null)
+        ((not (pair? tree)) (* tree factor))
+        (else (cons (scale-tree (car tree) factor)
+                    (scale-tree (cdr tree) factor)))))
+
+(scale-tree x 10)
+
+
+(define (scale-tree tree factor)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (scale-tree sub-tree factor)
+             (* sub-tree factor)))
+       tree))
