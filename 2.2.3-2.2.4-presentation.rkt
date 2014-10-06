@@ -1,4 +1,37 @@
 
+
+
+
+
+
+
+
+
+
+
+
+(define (add x)
+  (define (next y) y)
+  (next x)
+  )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (define (smallest-divisor n)
   (find-divisor n 2))
 
@@ -9,6 +42,7 @@
 
 (define (divides? a b)
   (= (remainder b a) 0))
+
 (define (prime? n)
   (= n (smallest-divisor n)))
 
@@ -47,6 +81,7 @@
                  (sum-odd-squares (cdr tree))))))
 
 
+(enumerate-tree (list 1 (list 2 (list 3 4)) 5))
 
 
 
@@ -76,6 +111,12 @@
 ;; Anyone spot the 'transducer' reference?
 
 
+
+
+
+
+
+
 ;; +-------------+   +-------------+   +-------------+   +-------------+
 ;; | enumerate:  |-->| filter:     |-->| map:        |-->| accumulate: |
 ;; | tree leaves |   | odd?        |   | square      |   | +, 0        |
@@ -93,16 +134,15 @@
 
 
 
-(define (first x) (car x))
-(define (rest x) (cdr x))
 
 ;; We already saw map... here it is again
 
+;; (x -> y) -> [x] -> [y] 
 (define (map proc items)
   (if (null? items)
       null
-      (cons (proc (first items))
-            (map proc (rest items)))))
+      (cons (proc (car items))
+            (map proc (cdr items)))))
 
 (map square '(1 2 3))
 
@@ -117,6 +157,7 @@
 
 
 ;; What about filter?
+;; (x -> boolean) -> [x] -> [x]
 (define (filter predicate sequence)
   (cond ((null? sequence) null)
         ((predicate (car sequence))
@@ -134,7 +175,10 @@
 
 
 
-;; (x y -> y) y [x] -> y
+
+
+;; []n -> 1
+;; (x y -> y) -> y -> [x] -> y
 (define (accumulate op initial sequence)
   (if (null? sequence)
       initial
@@ -158,6 +202,7 @@
   (if (> low high)
       null
       (cons low (enumerate-interval (+ low 1) high))))
+
 (enumerate-interval 2 7)
 
 
@@ -179,6 +224,13 @@
 
 
 
+
+
+
+
+
+
+
 (define (sum-odd-squares tree)
   (accumulate +
               0
@@ -189,12 +241,25 @@
 
 
 
+
+
+
+
+
+
 (define (even-fibs n)
   (accumulate cons
               null
               (filter even?
                       (map fib
                            (enumerate-interval 0 n)))))
+
+
+
+
+
+
+
 
 ;; This expression is extremely modular AND safer than bespoke logic
 
@@ -207,6 +272,9 @@
 
 
 
+(define (list-fib-squares n)
+  (map (compose square fib)
+       (enumerate-interval 0 n)))
 
 (define (list-fib-squares n)
   (accumulate cons
@@ -231,6 +299,22 @@
               0
               (map salary
                    (filter programmer? records))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
