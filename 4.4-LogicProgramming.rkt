@@ -213,3 +213,39 @@ be to order the return and then only take the top half.
 
 ;; The two or queries are evaluated in parallel, which causes the
 ;; infinite loop
+
+
+;;   *Exercise 4.65:* Cy D. Fect, looking forward to the day when he
+;;   will rise in the organization, gives a query to find all the
+;;   wheels (using the `wheel' rule of section *Note 4-4-1::):
+
+;;        (wheel ?who)
+
+;;   To his surprise, the system responds
+
+        ;;; Query results:
+(wheel (Warbucks Oliver))
+(wheel (Bitdiddle Ben))
+(wheel (Warbucks Oliver))
+(wheel (Warbucks Oliver))
+(wheel (Warbucks Oliver))
+
+;;   Why is Oliver Warbucks listed four times?
+
+;; Query 
+(rule (wheel ?person)
+      (and (supervisor ?middle-manager ?person)
+           (supervisor ?x ?middle-manager)))
+
+;; facts
+(supervisor (Hacker Alyssa P) (Bitdiddle Ben))
+(supervisor (Fect Cy D) (Bitdiddle Ben))
+(supervisor (Tweakit Lem E) (Bitdiddle Ben))
+(supervisor (Reasoner Louis) (Hacker Alyssa P))
+(supervisor (Bitdiddle Ben) (Warbucks Oliver))
+(supervisor (Scrooge Eben) (Warbucks Oliver))
+(supervisor (Cratchet Robert) (Scrooge Eben))
+(supervisor (Aull DeWitt) (Warbucks Oliver))
+
+
+
