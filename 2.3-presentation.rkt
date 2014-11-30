@@ -104,16 +104,27 @@
 
 
 
-;; sets as unordered
+;; sets - unordered
+
 (define (element-of-set? x set)
   (cond ((null? set) false)
         ((equal? x (car set)) true)
         (else (element-of-set? x (cdr set)))))
 
+(element-of-set? 3 '(2 4 1 7))
+(element-of-set? 3 '(2 4 1 3 7))
+;; Requires theta(n) traversals
+
+
+
 (define (adjoin-set x set)
   (if (element-of-set? x set)
       set
       (cons x set)))
+
+(adjoin-set 4 '(3))
+;; also theta(n)
+
 
 (define (intersection-set set1 set2)
   (cond ((or (null? set1) (null? set2)) '())
@@ -121,3 +132,49 @@
          (cons (car set1)
                (intersection-set (cdr set1) set2)))
         (else (intersection-set (cdr set1) set2))))
+
+(intersection-set '(1 2 4) '(2 3 4))
+;; theta(n^2) .. for every element, iterate on the other once
+
+(time (intersection-set (range 1 10000 3) (range 2 10000 1)))
+;; > cpu time: 1591 real time: 1590 gc time: 0
+
+(time (intersection-set (range 1 10000 2) (range 2 10000 2)))
+;; > cpu time: 2414 real time: 2412 gc time: 0
+
+;; by making them ordered, we can shorten that
+
+;; sets - ordered
+
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((= x (car set)) true)
+        ((< x (car set)) false)
+        (else (element-of-set? x (cdr set)))))
+
+(element-of-set? 5 '(6 7 88))
+
+;; doesn't change theta(n) but shortens the average by a factor of 2
+
+
+(define (intersection-set set1 set2)
+  (if (or (null? set1) (null? set2))
+      '()
+      (let ((x1 (car set1)) (x2 (car set2)))
+        (cond ((= x1 x2)
+               (cons x1
+                     (intersection-set (cdr set1)
+                                       (cdr set2))))
+              ((< x1 x2)
+               (intersection-set (cdr set1) set2))
+              ((< x2 x1)
+               (intersection-set set1 (cdr set2)))))))
+
+(time (intersection-set (range 1 10000 3) (range 2 10000 1)))
+;; > cpu time: 2 real time: 2 gc time: 0
+(time (intersection-set (range 1 10000 2) (range 2 10000 2)))
+;; > cpu time: 2 real time: 2 gc time: 0
+
+;; at most steps is the sum of the sizes of the two elements, or theta(n)
+
+;; sets - binary trees
