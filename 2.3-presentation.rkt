@@ -178,3 +178,132 @@
 ;; at most steps is the sum of the sizes of the two elements, or theta(n)
 
 ;; sets - binary trees
+
+(define (entry tree) (car tree))
+
+(define (left-branch tree) (cadr tree))
+
+(define (right-branch tree) (caddr tree))
+
+(define (make-tree entry left right)
+  (list entry left right))
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((= x (entry set)) true)
+        ((< x (entry set))
+         (element-of-set? x (left-branch set)))
+        ((> x (entry set))
+         (element-of-set? x (right-branch set)))))
+
+(define (adjoin-set x set)
+  (cond ((null? set) (make-tree x '() '()))
+        ((= x (entry set)) set)
+        ((< x (entry set))
+         (make-tree (entry set)
+                    (adjoin-set x (left-branch set))
+                    (right-branch set)))
+        ((> x (entry set))
+         (make-tree (entry set)
+                    (left-branch set)
+                    (adjoin-set x (right-branch set))))))
+
+(define (tree->list-1 tree)
+  (if (null? tree)
+      '()
+      (append (tree->list-1 (left-branch tree))
+              (cons (entry tree)
+                    (tree->list-1 (right-branch tree))))))
+
+(define (tree->list-2 tree)
+  (define (copy-to-list tree result-list)
+    (if (null? tree)
+        result-list
+        (copy-to-list (left-branch tree)
+                      (cons (entry tree)
+                            (copy-to-list (right-branch tree)
+                                          result-list)))))
+  (copy-to-list tree '()))
+
+(define x (adjoin-set
+    7 (adjoin-set
+       2 (adjoin-set
+          5 (adjoin-set
+             3 (adjoin-set
+                6 '()))))))
+(tree->list-2 x)
+;; => (2 3 5 6 7)
+
+(tree->list-1 x)
+;; => (2 3 5 6 7)
+
+(define (m-tree elements)
+  (if (null? elements)
+      '()
+      (adjoin-set (car elements)
+                  (m-tree (cdr elements)))))
+
+(define  fig2-16a (m-tree '(1 5 11 3 9 7))) 
+;; => (11 (5 (1 () (3 () ())) (9 (7 () ()) ())) ())
+
+
+(define (list->tree elements)
+  (car (partial-tree elements (length elements))))
+
+(define (partial-tree elts n)
+  (if (= n 0)
+      ;; This has to return the remaining elements and
+      ;; an empty list which will be used to fill in
+      ;; an empty leaf node
+      (cons '() elts)
+      (let ((left-size (quotient (- n 1) 2)))
+        (let ((left-result (partial-tree elts left-size)))
+          (let ((left-tree (car left-result))
+                (non-left-elts (cdr left-result))
+                (right-size (- n (+ left-size 1))))
+            (let ((this-entry (car non-left-elts))
+                  (right-result (partial-tree (cdr non-left-elts)
+                                              right-size)))
+              (let ((right-tree (car right-result))
+                    (remaining-elts (cdr right-result)))
+                (cons (make-tree this-entry left-tree right-tree)
+                      remaining-elts))))))))
+
+;; Get list size 1
+
+
+(list->tree '(1 3 5 7 9 11))
+;; => (5 (1 () (3 () ())) (9 (7 () ()) (11 () ())))
+;;    5
+;; 1    9
+;;  3  7 11
+
+
+;; Just use the "tree->list" function
+;; to O(n) convert the tree, then use the
+;; regular O(n) intersection from earlier
+(define  (intersection-set tree1 tree2)
+  (define (intersection-inner set1 set2)
+    (cond ((or (null? set1)
+               (null? set2)) '())
+          (else
+           (let ((n1 (car set1))
+                 (n2 (car set2)))
+             (cond ((= n1 n2)
+                    (cons n1
+                          (intersection-inner (cdr set1)
+                                              (cdr set2))))
+                   ((< n1 n2)
+                    (intersection-inner (cdr set1) set2))
+                   ((> n1 n2)
+                    (intersection-inner set1 (cdr set2))))))))
+  (list->tree (intersection-inner (tree->list-2 tree1)
+                                  (tree->list-2 tree2))))
+
+
+(intersection-set (list->tree '(1 3 5 7 9 11))
+                  (list->tree '(4 5 7)))
+;; => (5 () (7 () ()))
+(time (intersection-set (list->tree (range 1 10000 3))
+                        (list->tree (range 2 10000 1))))
+;; cpu time: 14 real time: 15 gc time: 5
+
