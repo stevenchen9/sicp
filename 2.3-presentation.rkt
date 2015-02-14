@@ -2,11 +2,13 @@
 
 (define b 2)
 
+
 (list a b)
 
 (list 'a 'b)
 
 (list 'a b)
+
 
 (car '(a b c))
 
@@ -16,7 +18,6 @@
         (else (memq item (cdr x)))))
 (memq 'apple '(pear banana prune))
 (memq 'apple '(x (apple sauce) y apple pear))
-
 
 ;; Differentiation
 
@@ -84,7 +85,6 @@
 (deriv '(* x y) 'x)
 
 (deriv '(* (* x y) (+ x 3)) 'x)
-
 
 
 ;; using a better "constructor" we can cause simplification
