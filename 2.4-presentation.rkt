@@ -1,3 +1,4 @@
+
 (define (add-complex z1 z2)
   (make-from-real-imag (+ (real-part z1) (real-part z2))
                        (+ (imag-part z1) (imag-part z2))))
@@ -22,6 +23,7 @@
 (define (make-from-real-imag x y) (cons x y))
 (define (make-from-mag-ang r a) 
   (cons (* r (cos a)) (* r (sin a))))
+
 
 ;; Polar Form
 (define (real-part z)
@@ -69,6 +71,7 @@
   (attach-tag 'rectangular
               (cons (* r (cos a)) (* r (sin a)))))
 
+
 ;; Tagged polar examples, but still no dispatch
 (define (real-part-polar z)
   (* (magnitude-polar z) (cos (angle-polar z))))
@@ -111,7 +114,14 @@
         (else (error "Unknown type -- ANGLE" z))))
 
 ;; original equations still work!
+(define rect1 (make-from-real-imag-rectangular 2 2 ))
+(define rect2 (make-from-real-imag-rectangular 7 0 ))
 
+(define p1 (make-from-mag-ang-polar 2 2 ))
+(define p2 (make-from-mag-ang-polar 2 3 ))
+
+(add-complex rect1 rect2)
+(add-complex p1 p2)
 
 ;; rect package, with assumed tables for (put)
 (define (install-rectangular-package)
@@ -137,6 +147,7 @@
   (put 'make-from-mag-ang 'rectangular 
        (lambda (r a) (tag (make-from-mag-ang r a))))
   'done)
+
 ;; polar package, with assumed tables for (put)
 (define (install-polar-package)
   ;; internal procedures
@@ -170,10 +181,14 @@
           (error
             "No method for these types -- APPLY-GENERIC"
             (list op type-tags))))))
+
 (define (real-part z) (apply-generic 'real-part z))
 (define (imag-part z) (apply-generic 'imag-part z))
 (define (magnitude z) (apply-generic 'magnitude z))
 (define (angle z) (apply-generic 'angle z))
+
+(real-part rect1)
+(real-part p1)
 
 (define (make-from-real-imag x y)
   ((get 'make-from-real-imag 'rectangular) x y))
