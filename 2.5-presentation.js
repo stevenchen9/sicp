@@ -1,4 +1,4 @@
-var dispatch = {}; 
+var dispatch = Object.create(null); 
 var put = function(op, type, f){
     dispatch[op + type] = f;
 };
@@ -59,16 +59,17 @@ var make_from_real_imag = function (x, y) {
     return get('make_from_real_imag', 'rectangular')(x, y);
 };
 
-installRectPackage();
-
-var rect1 = make_from_real_imag(2, 2);
-var rect2 = make_from_real_imag(7, 0);
 
 
 var add_complex = function(z1, z2) {
   return make_from_real_imag((real_part(z1) + real_part(z2)),
                              (imag_part(z1) + imag_part(z2)));
 };
+
+installRectPackage();
+
+var rect1 = make_from_real_imag(2, 2);
+var rect2 = make_from_real_imag(7, 0);
 
 console.log("contesnt: " + contents(rect2));
 console.log("type_tag: " + type_tag(rect2));

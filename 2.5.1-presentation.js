@@ -1,4 +1,32 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var dispatch = {}; 
+var dispatchC = {}; 
+var put_coercion = function(t1, t2, f){
+    dispatchC[t1 + t2] = f;
+};
+var get_coercion = function(t1, t2){
+    return dispatchC[t1 + t2]; 
+};
 var put = function(op, type, f){
     dispatch[op + type] = f;
 };
@@ -13,6 +41,40 @@ var contents = function(obj){
 };
 var attach_tag = function(tag, obj){
     return [tag, obj];
+};
+
+var apply_generic = function(op, args){
+    var type_tags = args.map(type_tag);
+    var proc = get(op, type_tags);
+    if (proc) {
+        return proc.apply(this, args.map(contents));
+    } else {
+        return "No method for these types -- APPLY-GENERIC" + type_tags;
+    }
+};
+apply_generic = function(op, args){
+    var type_tags = args.map(type_tag);
+    var proc = get(op, type_tags);
+    if (proc) {
+        return proc.apply(this, args.map(contents));
+    } else {
+        var t1 = type_tags[0];
+        var t2 = type_tags[1];
+        var a1 = args[0];
+        var a2 = args[1];
+        var t1TOt2 = get_coercion(t1, t2);
+        var t2TOt1 = get_coercion(t2, t1);
+
+        if (t1TOt2) {
+            console.log("Casting " + t1 + " to " + t2);
+            return apply_generic(op, [t1TOt2(a1), a2]);
+        } else if(t2TOt1) {
+            console.log("Casting " + t2 + " to " + t1);
+            return apply_generic(op, [a1, t2TOt1(a2)]);
+        } else {
+            return "No method for these types -- APPLY-GENERIC" + type_tags;
+        }
+    }
 };
 
 var installRectPackage = function(){
@@ -40,69 +102,23 @@ var installRectPackage = function(){
        function(x, y){ return tag(make_from_mag_ang(x, y));});
 }; 
 
-// var apply_generic = function(op, arg){
-//     var type_tags = type_tag(arg);
-//     var proc = get(op, type_tags);
-//     if (proc) {
-//         return proc(contents(arg));
-//     } else {
-//         return "No method for these types -- APPLY-GENERIC" + type_tags;
-//     }
-// };
-var apply_generic = function(op, args){
-    var type_tags = args.map(type_tag);
-    var proc = get(op, type_tags);
-    //console.log("contnets " + args.map(contents));
-    if (proc) {
-        return proc.apply(this, args.map(contents));
-    } else {
-        return "No method for these types -- APPLY-GENERIC" + type_tags;
-    }
-};
-
-
- // (apply-generic op . args)
- //  (let ((type-tags (map type-tag args)))
- //    (let ((proc (get op type-tags)))
- //      (if proc
- //          (apply proc (map contents args))
- //          (error
- //            "No method for these types -- APPLY-GENERIC"
- //            (list op type-tags))))))
-
-var real_part = function(z){return apply_generic('real_part', [z]);};
-var imag_part = function(z){return apply_generic('imag_part', [z]);};
-var magnitude = function(z){return apply_generic('magnitude', [z]);};
-var angle = function(z){return apply_generic('angle', [z]);};
-
-var make_from_real_imag = function (x, y) {
-    return get('make_from_real_imag', 'rectangular')(x, y);
-};
-
-installRectPackage();
-
-var add = function(x, y) { return apply_generic('add', [x, y]); };
-var sub = function(x, y) { return apply_generic('sub', [x, y]);};
-var mul = function(x, y) { return apply_generic('mul', [x, y]);};
-var div = function(x, y) { return apply_generic('div', [x, y]);};
-
 var install_scheme_number_package = function() {
+  var integer_rational = function (i) {return make_rational(i, 1);};
   var tag = function(x) { return attach_tag('scheme_number', x);};
-  put('add', '(scheme_number scheme_number)',
+  put('add', ['scheme_number','scheme_number'],
        function(x,y){ return tag(x + y);});
-  put('sub', '(scheme_number scheme_number)',
+  put('sub', ['scheme_number','scheme_number'],
        function(x,y){return tag(x + y);});
-  put('mul', '(scheme_number scheme_number)',
+  put('mul', ['scheme_number','scheme_number'],
        function(x,y){return tag(x * y);});
-  put('div', '(scheme_number scheme_number)',
+  put('div', ['scheme_number','scheme_number'],
        function(x,y){return tag(x / y);});
   put('make', 'scheme_number',
        function(x) { return tag(x);});
+
+  put_coercion('scheme_number', 'rational', integer_rational);
 };
 
-var make_scheme_number = function(n) {
-  return get('make', 'scheme_number')(n);
-};
 
 var install_rational_package = function() {
   // internal procedures
@@ -126,21 +142,19 @@ var install_rational_package = function() {
 
   //interface to rest of the system
   var tag = function(x) { return attach_tag('rational', x);};
-  put('add', '(rational rational)',
+  put('add', ['rational', 'rational'],
        function(x,y){ return tag(add_rat(x, y));});
-  put('sub', '(rational rational)',
+  put('sub', ['rational','rational'],
        function(x,y){ return tag(sub_rat(x, y)); });
-  put('mul', '(rational rational)',
+  put('mul', ['rational','rational'],
        function(x,y){ return  tag(mul_rat(x, y)); });
-  put('div', '(rational rational)',
+  put('div', ['rational','rational'],
        function(x,y){ return  tag(div_rat(x, y)); });
 
   put('make', 'rational',
        function(n,d){ return tag(make_rat(n, d)); });
 };
 
-var make_rational = function(n, d) {
-  return get('make', 'rational')(n, d); };
 
 var install_complex_package = function() {
   // imported procedures from rectangular and polar packages
@@ -179,14 +193,33 @@ var install_complex_package = function() {
        function(r,a){ return tag(make_from_mag_ang(r, a));});
 };
 
-var make_complex_from_real_imag = function(x, y) {
-  return get('make_from_real_imag', 'complex')(x, y); };
+var real_part = function(z){return apply_generic('real_part', [z]);};
+var imag_part = function(z){return apply_generic('imag_part', [z]);};
+var magnitude = function(z){return apply_generic('magnitude', [z]);};
+var angle = function(z){return apply_generic('angle', [z]);};
+var add = function(x, y) { return apply_generic('add', [x, y]); };
+var sub = function(x, y) { return apply_generic('sub', [x, y]);};
+var mul = function(x, y) { return apply_generic('mul', [x, y]);};
+var div = function(x, y) { return apply_generic('div', [x, y]);};
 
+var make_scheme_number = function(n) {
+  return get('make', 'scheme_number')(n);
+};
+var make_from_real_imag = function (x, y) {
+    return get('make_from_real_imag', 'rectangular')(x, y);
+};
+var make_rational = function(n, d) {
+  return get('make', 'rational')(n, d); 
+};
+var make_complex_from_real_imag = function(x, y) {
+  return get('make_from_real_imag', 'complex')(x, y); 
+};
 var make_complex_from_mag_ang = function(r, a) {
   return get('make_from_mag_ang', 'complex')(r, a); 
 };
 
 
+installRectPackage();
 install_complex_package();
 install_rational_package();
 install_scheme_number_package();
@@ -194,8 +227,32 @@ install_scheme_number_package();
 var rect1 = make_complex_from_real_imag(2, 2);
 var rect2 = make_complex_from_real_imag(7, 0);
 
-console.log("contents rect1: " + contents(rect1));
-console.log("type_tag rect1: " + type_tag(rect1));
-console.log("contents rect2: " + contents(rect2));
-console.log("type_tag rect2: " + type_tag(rect2));
-console.log("sum: " + add(rect1, rect2));
+// console.log("rect1: " + rect1);
+// console.log("contents rect1: " + contents(rect1));
+// console.log("type_tag rect1: " + type_tag(rect1));
+// console.log("contents rect2: " + contents(rect2));
+// console.log("type_tag rect2: " + type_tag(rect2));
+// console.log("sum: " + add(rect1, rect2));
+
+
+var r1 = make_rational(4,2);
+var n1 = make_scheme_number(2);
+
+console.log("sum: " + add(r1, n1));
+
+
+add :: 'a -> 'a -> 'a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
